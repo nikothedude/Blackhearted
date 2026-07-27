@@ -1,0 +1,5 @@
+{
+	"BH_choseDestiny":{"sounds":[
+		{"file":"sounds/sfx_charscreen/charscreen-aptitude_max.ogg","pitch":1,"volume":0.4},
+	],},
+},
