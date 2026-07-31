@@ -97,7 +97,7 @@ abstract class Mote(val color: Color) {
     abstract fun getSpatialLocation(): Vector2f
 
     fun render() {
-        if (spriteOne == null) {
+        if (!this::spriteOne.isInitialized || spriteOne == null) {
             initializeSprites()
         }
         val loc = getSpatialLocation()

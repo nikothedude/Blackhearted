@@ -1,0 +1,3 @@
+name,id,type,tags,activationDays,activationCooldown,durationDays,deactivationDays,deactivationCooldown,unlockedAtStart,defaultForAIFleet,musicSuppression,uiOn,uiOff,uiLoop,worldOn,worldOff,worldLoop,icon,plugin,ai,desc,sortOrder
+Dancing Stars,BH_moteRing,TOGGLE,"stealth-, codex_unlockable",0.12,,,0.12,,,,,mote_attractor_system_activated,mote_attractor_targeted_empty_space,,,,,graphics/hullmods/high_volition_attractor.png,nikoblackhearted.themes.motes.abilities.BHMoteRingAbility,,<made in script>,1000
+Starry Shower,BH_moteStrike,DURATION,codex_unlockable,,,,,,,,,mote_attractor_targeted_empty_space,mote_attractor_system_activated,,,,,graphics/hullmods/quantum_disruptor.png,nikoblackhearted.themes.motes.abilities.BHMoteStrikeAbility,,<made in script>,1001

@@ -33,9 +33,12 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
 
     data class MoteSwarmParams(
         val numMotes: Int = 15,
-        val baseColor: Color = Color(100,165,255,255)
+        val baseColor: Color = Color(100,165,255,255),
+        val spawnSound: String? = null
     )
 
+    var fadingOut = false
+    var fadeTime = 0f
     val motes = HashSet<SwarmingMote>()
     var target: SectorEntityToken? = null
         set(value) {
@@ -68,6 +71,7 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
         }
 
         private fun checkCollision() {
+            if (swarm.fadeTime != 0f) return
              for (fleet in swarm.entity.containingLocation.fleets) {
                 if (fleet != target) {
                     if (swarm.entity.faction != null && !fleet.faction.isHostileTo(swarm.entity.faction)) {
@@ -77,7 +81,7 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
 
                 val loc = getSpatialLocation()
                 val dist = MathUtils.getDistance(fleet, loc)
-                if (dist > 0f) return
+                if (dist > 0f) continue
 
                 impact(fleet)
             }
@@ -109,13 +113,13 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
             fleet.stats.addTemporaryModFlat(
                 1f,
                 "${this}_2",
-                -25f,
+                -200f,
                 fleet.stats.sensorRangeMod
             )
             fleet.stats.addTemporaryModFlat(
                 5f,
                 "${this}_3",
-                100f,
+                200f,
                 fleet.stats.detectedRangeMod
             )
 
@@ -186,7 +190,11 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
 
         override fun getSpatialLocation(): Vector2f = Vector2f(location).translate(swarm.entity.location.x, swarm.entity.location.y)
         override fun getAlphaMult(): Float {
-            return swarm.entity.sensorFaderBrightness
+            if (swarm.fadeTime == 0f) return 1f
+            if (swarm.fadingOut) {
+                return (swarm.fadeTime)
+            }
+            return 1f - (swarm.fadeTime)
         }
     }
 
@@ -206,6 +214,8 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
             pluginParams = MoteSwarmParams()
         }
 
+        fadeTime = 1f
+
         params = pluginParams
 
         var motesLeft = params.numMotes
@@ -214,8 +224,20 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
         }
     }
 
+    var didSound = false
     override fun advance(amount: Float) {
         super.advance(amount)
+
+        if (!didSound && params.spawnSound != null) {
+            Global.getSoundPlayer().playSound(
+                params.spawnSound,
+                1f,
+                1f,
+                entity?.location,
+                Misc.ZERO
+            )
+            didSound = true
+        }
 
         for (mote in motes) {
             mote.advance(amount)
@@ -224,17 +246,26 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
         if (target != null) {
             pursuitTime.advance(Misc.getDays(amount))
             if (pursuitTime.intervalElapsed()) {
-                delete()
-                return
+                if (fadeTime == 0f) {
+                    fadeOut()
+                }
             }
 
             val angle = VectorUtils.getAngle(entity.location, target!!.location)
             entity.facing = angle
             val newLoc = Vector2f(entity.location).translateTowardsAngle(
                 angle,
-                10f * amount
+                300f * amount
             )
             entity.setLocation(newLoc.x, newLoc.y)
+        }
+
+        if (fadeTime > 0f) {
+            fadeTime = (fadeTime - amount).coerceAtLeast(0f)
+            if (fadeTime == 0f && fadingOut) {
+                delete()
+                return
+            }
         }
     }
 
@@ -254,7 +285,12 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
     }
 
     fun delete() {
-        entity.fadeAndExpire(1f)
+        entity.containingLocation.removeEntity(entity)
+    }
+
+    fun fadeOut() {
+        fadingOut = true
+        fadeTime = 1f
     }
 
     fun getEntityExternal(): SectorEntityToken? {

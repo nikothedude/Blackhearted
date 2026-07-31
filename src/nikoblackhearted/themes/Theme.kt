@@ -59,6 +59,10 @@ enum class Theme(val canBeSkipped: Boolean = true) {
         override fun getNewIntelInstance(): BHThemeIntel {
             return BHMoteThemeIntel()
         }
+
+        override fun isEnabled(): Boolean {
+            return true
+        }
     },
     OMEGA {
         override fun getShortDescription(tooltip: TooltipMakerAPI) {

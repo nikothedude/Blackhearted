@@ -13,9 +13,8 @@ object BHRepHandler {
     fun adjustRepMalus(amount: Float, factions: List<FactionAPI>) {
         for (fac in factions) {
             // TODO - do this in a way that doesnt use nex
-            val mod = DiplomacyManager.getManager().getMaxRelationshipMod(fac.id, Factions.PLAYER)
+            val mod = DiplomacyManager.getManager().getMaxRelationshipStat(fac.id, Factions.PLAYER)
             mod.modifyFlat(REP_MOD_ID, amount)
         }
     }
-
 }

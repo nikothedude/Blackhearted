@@ -7,6 +7,8 @@ class BHModPlugin : BaseModPlugin() {
        * It is most useful for loading data that only really needs to be setup once. */
     @Throws(Exception::class)
     override fun onApplicationLoad() {
+    BHSettings.getLoadedMods()
+        BHSettings.loadSettings()
     }
 
     /*This method is run in two cases:
