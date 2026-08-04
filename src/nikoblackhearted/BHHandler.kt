@@ -1,11 +1,13 @@
 package nikoblackhearted
 
 import com.fs.starfarer.api.Global
+import nikoblackhearted.themes.BHThemeMainIntel
 import nikoblackhearted.themes.Theme
 
 object BHHandler {
     const val BLACKHEARTED_BOOLEAN_KEY = "\$BH_isBlackhearted"
     const val THEME_KEY = "\$BH_themeKey"
+    const val THEME_INTEL_KEY = "\$BH_themeIntelKey"
     const val INTEL_KEY = "Blackhearted"
     const val BUTTON_DATA = "BH_themeData"
     const val THEME_PLUGIN_KEY = "\$BH_themePlugin"
@@ -25,5 +27,5 @@ object BHHandler {
         theme.init()
     }
 
-    fun getThemePlugin(): BHThemePlugin? = Global.getSector().memoryWithoutUpdate[THEME_PLUGIN_KEY] as? BHThemePlugin
+    fun getThemeIntel(): BHThemeMainIntel? = Global.getSector().memoryWithoutUpdate[THEME_INTEL_KEY] as? BHThemeMainIntel
 }

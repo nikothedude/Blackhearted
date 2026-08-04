@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.listeners.ColonyPlayerHostileActListener
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener
+import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.Nex_MarketCMD
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import exerelin.campaign.InvasionRound
@@ -141,6 +142,10 @@ abstract class BHThemeMainIntel: BHThemeIntel(), FleetEventListener, ColonyPlaye
     }
 
     open fun reportAgentAction(intel: CovertActionIntel) {
+        return
+    }
+
+    open fun combatInitialized(engine: CombatEngineAPI) {
         return
     }
 

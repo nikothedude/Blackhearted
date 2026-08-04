@@ -5,8 +5,13 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.combat.CombatEngineAPI
+import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseOneTimeFactor
+import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
@@ -21,11 +26,13 @@ import nikoblackhearted.FleetHelpers.isCivilian
 import nikoblackhearted.FleetHelpers.isOutcast
 import nikoblackhearted.locks.LevelLock
 import nikoblackhearted.themes.BHThemeMainIntel
+import nikoblackhearted.themes.motes.combat.BHMoteRingPlugin
 import nikoblackhearted.themes.motes.factors.BHMoteAgentHint
 import nikoblackhearted.themes.motes.factors.BHMoteFleetDestructionHint
 import nikoblackhearted.themes.motes.factors.BHMoteGenericFactor
 import nikoblackhearted.themes.motes.factors.BHMoteMarketActionHint
 import org.lazywizard.lazylib.MathUtils.clamp
+import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.isPirateFaction
 import java.awt.Color
 import kotlin.math.roundToInt
@@ -171,6 +178,43 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
+                val facId = Factions.LUDDIC_CHURCH
+                val playerFleet = Global.getSector().playerFleet
+
+                val enc = DelayedFleetEncounter(
+                    null,
+                    "BH_moteOpposition"
+                )
+                enc.setTypes(
+                    DelayedFleetEncounter.EncounterType.OUTSIDE_SYSTEM,
+                    DelayedFleetEncounter.EncounterType.IN_HYPER_EN_ROUTE,
+                )
+                if (Global.getSettings().isDevMode) {
+                    enc.setDelayNone()
+                } else {
+                    enc.setDelay(10f, 30f)
+                }
+                enc.setLocationInnerSector(true, facId)
+                enc.setDoNotAbortWhenPlayerFleetTooStrong()
+
+                enc.beginCreate()
+
+                enc.triggerCreateFleet(
+                    HubMissionWithTriggers.FleetSize.MEDIUM,
+                    HubMissionWithTriggers.FleetQuality.HIGHER,
+                    facId,
+                    FleetTypes.MERC_PRIVATEER,
+                    Vector2f()
+                )
+                enc.triggerSetFleetCombatFleetPoints(playerFleet.fleetPoints * 1.1f)
+                enc.triggerSetFleetAlwaysPursue()
+                enc.triggerMakeHostileAndAggressive()
+                enc.triggerMakeNoRepImpact()
+                enc.triggerOrderFleetInterceptPlayer(true, true)
+                enc.triggerSetFleetGenericHailPermanent("BH_moteOpposition")
+
+                enc.endCreate()
+
                 return
             }
 
@@ -233,6 +277,10 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
+                Global.getSector().playerFaction.addKnownIndustry(
+                    "BH_moteAttractor"
+                )
+
                 return
             }
         },
@@ -376,7 +424,9 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
-                return
+                Global.getSector().playerFaction.addKnownIndustry(
+                    "BH_tormentNexus"
+                )
             }
         },
         MOTE_DEATH("From death, Art") {
@@ -584,7 +634,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         }
     }
 
-    private fun adjustSongStacks(adjustment: Int) {
+    fun adjustSongStacks(adjustment: Int) {
         currSongStacks = clamp(currSongStacks + adjustment, 0, maxSongStacks)
 
         syncSongStats()
@@ -1056,5 +1106,11 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         if (factor == null) return
 
         addFactor(factor)
+    }
+
+    override fun combatInitialized(engine: CombatEngineAPI) {
+        if (moteRingReached) {
+            engine.addPlugin(BHMoteRingPlugin(this, engine))
+        }
     }
 }

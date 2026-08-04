@@ -1,6 +1,8 @@
 package nikoblackhearted
 
 import com.fs.starfarer.api.BaseModPlugin
+import com.fs.starfarer.api.Global
+import nikoblackhearted.themes.motes.industries.BHTormentNexusInd
 
 class BHModPlugin : BaseModPlugin() {
     /*This method is run right at the end of starsectors loading.
@@ -17,6 +19,7 @@ class BHModPlugin : BaseModPlugin() {
     * This method is most useful for adding transient listeners/scripts and for enabling mid-save compatibility,
     * like adding star systems to an existing save if the mod was just added. */
     override fun onGameLoad(newGame: Boolean) {
+        Global.getSector().listenerManager.addListener(BHTormentNexusInd.TormentNexusOptAdder(), true)
     }
 
     /*Runs when a save is created.

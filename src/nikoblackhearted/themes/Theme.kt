@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import nikoblackhearted.BHHandler.THEME_INTEL_KEY
 import nikoblackhearted.BHIntroIntel
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
 
@@ -195,6 +196,7 @@ enum class Theme(val canBeSkipped: Boolean = true) {
     fun init() {
         val instance = getNewIntelInstance()
         Global.getSector().intelManager.addIntel(instance)
+        Global.getSector().memoryWithoutUpdate[THEME_INTEL_KEY] = instance
         instance.isImportant = true
 
         initImpl(instance)

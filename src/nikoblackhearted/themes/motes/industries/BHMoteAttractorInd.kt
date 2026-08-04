@@ -105,4 +105,14 @@ open class BHMoteAttractorInd: BaseIndustry() {
 
         addGroundDefensesImpactSection(tooltip, GROUND_DEFENSE_MULT - 1f)
     }
+
+    override fun isAvailableToBuild(): Boolean {
+        return super.isAvailableToBuild() && market.faction.knowsIndustry(spec.id)
+    }
+
+    override fun showWhenUnavailable(): Boolean {
+        if (!market.faction.knowsIndustry(spec.id)) return false
+
+        return super.showWhenUnavailable()
+    }
 }
