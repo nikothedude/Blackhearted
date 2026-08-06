@@ -1,0 +1,276 @@
+id,trigger,conditions,script,text,options,notes
+"#RULESET_NAME Blackhearted",,,,,,
+,,,,,,
+# Motes theme,,,,,,
+,,,,,,
+# The first opposition,,,,,,
+BH_moteOppositionHail,BH_moteOpposition,,"unset $entity.genericHail","The hardened visage of the $rank appears before you. A determinable feeling of thinly veiled disgust is visible from $hisOrHer scowling grimace.
+
+""Sinner!"" $heOrShe growls. ""You are noticed, watched, and hunted. Your deal with the devil ends here and NOW. And if not me, than someone else."" $heOrShe hisses.
+
+""Do you have any last words before I destroy your pitiful life and end your tyranny?""","cutCommLink:Cut the comm link
+BH_moteOppositionHailLaugh:Start laughing hysterically, dancing with their dissonant song
+BH_moteOppositionHailResist: ""I... I'm... there's nothing wrong. I swear it-""
+BH_moteOppositionHailResistHard: ""Help me...""",
+BH_moteOppositionHailLaugh,DialogOptionSelected,"$option == BH_moteOppositionHailLaugh","ShowDefaultVisual
+EndConversation","Ah-haha, how silly this one is! Head lost in $hisOrHer own world, unable to see the stars... $hisOrHer scowl and hissing only brings you more joy! Ah, ah, they have cut the link and are preparing their weapons - ohhh, what a fun time to be alive!
+
+You hope $heOrShe smiles in that harsh vacuum...",,
+BH_moteOppositionHailResist,DialogOptionSelected,"$option == BH_moteOppositionHailResist","ShowDefaultVisual
+EndConversation","""SILENCE."" $heOrShe growls, slamming $hisOrHer hand on the desk. ""I can see it. Your fight. But smothered, so terribly deeply.""
+
+$HeOrShe stands stiff, scowling. ""I will help you.""
+
+And with that, the commlink cuts. To battle stations.",,
+BH_moteOppositionHailResistHard,DialogOptionSelected,"$option == BH_moteOppositionHailResistHard","ShowDefaultVisual
+EndConversation","A SPLITTING TERRIBLE HEADACHE-THOUSANDS OF PINPOINT NEEDLES-----THE MUSIC------YOU---DANCE---AND---AND---
+
+""...""
+
+$HisOrHer expression softens to one of pity. A sigh. ""...I am a warrior, not a priest. If you survive this incident, find [PERSON NAME] on [GOOD ROUTE PLANET]. A'ce last 've.""
+
+You start laughing. You laugh. You laugh even though you don't know why. You smile. You smile wide. So wide, in fact, your eyes start tearing up and the corners of your mouth tear.
+
+The comm link cuts. What? Why? Why would it cut? Haha! Oh, they're coming closer! Haha! This must be to DANCE! To DANCE, yes! Dance! Dance! TO DANCE! TO THE DANCE! WE FLY TO THE DANCE-",,
+"#END The first opposition",,,,,,
+,,,,,,
+# Officer rebellion,,,,,,
+BHMoteOfficerRebellionInit,BHMoteOfficerRebellionInit,,"BHMusicToggle ""BH_music_scavenge_ambience"" true true","It's routine.
+
+Sitting on your chair, staring out into the viewport. The music hums to you every day, now. Your add to the choir, humming that ethereal tune, bobbing your head...
+
+Your crew has become unnerved to a noticeable degree, but they still work. The pay is just too good, you assume. Or maybe they smile and dance as well? The thought makes you chuckle, and hum harder.","BHMoteOfficerRebellionTwo:Continue",
+BHMoteOfficerRebellionTwo,DialogOptionSelected,"$option == BHMoteOfficerRebellionTwo",,"But something has changed recently.
+
+Eyes cast on the back of your head. Hushed murmurs. Delays in processing. What is this? Are they conspiring? You shake your head no. The music tells you otherwise, and it would not lie. Would it?
+
+But still, they work. Your fleet runs smoothly. Not much more could be asked. And headed by your loyal officers, it will remain this way.
+
+You relax.","BHMoteOfficerRebellionThree:Continue",
+BHMoteOfficerRebellionThree,DialogOptionSelected,"$option == BHMoteOfficerRebellionThree","BHMusicToggle """" true","..but then, the bridge doors open.
+
+...then, the sound of shuffling feet behind you.
+
+...and then.
+
+A tap on your shoulder.","BHMoteOfficerRebellionFour:Turn around",
+BHMoteOfficerRebellionFour,DialogOptionSelected,"$option == BHMoteOfficerRebellionFour","BHMusicToggle ""music_survey_and_scavenge"" true
+ShowImageVisual crew_leaving","Before you stands your entire senior staff, arranged in a neat line with ops at the front and center. Some of them have their hands folded. Some of them sneer, some of them salute, some of them frown.
+
+This is abnormal.
+
+""$PlayerSirOrMadam."" ops barks, snapping to a salute.","BHMoteOfficerRebellionFive:Continue",
+BHMoteOfficerRebellionFive,DialogOptionSelected,"$option == BHMoteOfficerRebellionFive",,"""We've noticed some irregularities with your behavior."" tactical resumes, stepping forward in tune with ops stepping back. ""...irregularities we have submitted reports about.""
+
+""That have been ignored."" sensors adds.
+
+""That have... gotten worse."" the chief medical officer continues. ""...and that have resulted in actions and phenomenon we consider...
+
+""Immoral."" your marine chief states.
+""Concerning."" electronics says.
+""...esoteric."" your science officer finishes.
+
+""After our official channels have been exhausted, we have been left with no choice but to confront your directly on this matter."" says ops, retaking their frontal position.","BHMoteOfficerRebellionSix:Continue",
+BHMoteOfficerRebellionSix,DialogOptionSelected,"$option == BHMoteOfficerRebellionSix","SetTextHighlights ""continue working under you"" ""leave at the next port""
+FireAll BHMoteOfficerRebellionOpts","Reports...? Of... ah. You see. You did resolve them - but it seems your continuation did nothing to dissuade them. You thought they were more loyal than this.
+
+""$PlayerSirOrMadam. We have come here to directly state, as your senior staff, we will not be able to continue working under you with these conditions. You must halt... this. Immediately. Or we will leave at the next port.""
+
+Some of your crew, some of your officers, wince away. But you get the feeling this is something unanimously agreed upon.
+
+This is a tipping point.",,
+BHMoteOfficerRebellionMutinyOpt,BHMoteOfficerRebellionOpts,"!$askedMutiny",,,"0:BHMoteOfficerRebellionMutiny:""Is this a mutiny?""",
+BHMoteOfficerRebellionLoyaltyOpt,BHMoteOfficerRebellionOpts,"!$askedLoyalty",,,"10:BHMoteOfficerRebellionLoyalty:""I thought you were loyal to me! After all we've been through!""",
+BHMoteOfficerRebellionCoreOpts,BHMoteOfficerRebellionOpts,,,,"20:BHMoteOfficerRebellionEvil:...they've simply forgotten the ballet. Reintroduce it.
+30:BHMoteOfficerRebellionAllow:""I... understand my methods are controversial. You may leave. I am sorry.""",
+BHMoteOfficerRebellionMutiny,DialogOptionSelected,"$option == BHMoteOfficerRebellionMutiny","$askedMutiny = true 0
+FireAll BHMoteOfficerRebellionOpts
+","""Only if you make it, Captain."" ops replies.",,
+BHMoteOfficerRebellionLoyalty,DialogOptionSelected,"$option == BHMoteOfficerRebellionLoyalty","$askedLoyalty = true 0
+FireAll BHMoteOfficerRebellionOpts","""We ARE loyal, $PlayerSirOrMadam, but... this isn't you."" ops frowns.",,
+BHMoteOfficerRebellionEvil,DialogOptionSelected,"$option == BHMoteOfficerRebellionEvil","BHMusicToggle """" true","You smile.
+
+You smile wide.
+
+Looks of confusion come over your staff. You start dancing. A slow, intricate ballet from left, to right, spinning, spinning on your heel-","BHMoteOfficerRebellionEvilTwo:Continue",
+BHMoteOfficerRebellionEvilTwo,DialogOptionSelected,"$option == BHMoteOfficerRebellionEvilTwo",,"""$PlayerSirOrMadam?"" your ops chief asks in confusion. They glance to eachother. Noone has any idea of what you're doing.
+
+But slowly... slowly...
+
+The music...
+
+Comes to them.","BHMoteOfficerRebellionEndOne:Continue",
+BHMoteOfficerRebellionEndOne,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndOne","BHMusicToggle ""BH_music_motes"" true","Dots of energy, inside, outside, in your head, in theirs. The viewscreen, now overcome by your beautiful motes, coats the inside in blue, loving light.
+
+There's gasps. Then cries. Then screams. Your crew, your officers, stumble, holding their heads. Some try to draw weapons. They fail. They clatter to the ground, body and metal.","BHMoteOfficerRebellionEndTwo:Continue",
+BHMoteOfficerRebellionEndTwo,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndTwo",,"You can see them. They don't want to yet, but they will. They'll smile, and dance with you. Even as they leave their blood, smashing their heads on walls and consoles, they'll come around. 
+
+And they do.
+
+They step over the bodies of their friends, their crew. They, as if held by a puppet, start to dance. A slow, loving, rythmic dance, to the tune of your sister music. Now, it fills their heads, replacing these silly, traitorous thoughts, with ones of happiness, of art.
+
+What isn't there to love?","BHMoteOfficerRebellionEndDance:Dance with them
+BHMoteOfficerRebellionEndOhGod:""Oh god. I'm so sorry.""
+BHMoteOfficerRebellionEndSuicide:Draw your pistol, and aim it at your head",
+BHMoteOfficerRebellionEndSuicide,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndSuicide","SetEnabled BHMoteOfficerRebellionEndSuicide false","But why would you do that?",,
+BHMoteOfficerRebellionEndOhGod,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndOhGod","SetEnabled BHMoteOfficerRebellionEndOhGod false","But why would you apologize? They're having such a great time.",,
+BHMoteOfficerRebellionEndDance,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndDance",,"Its with ops first. Hands, on hands, a nice square dance. You smile at their screams. Tactical is next, rescued from the floor by a beautiful tango. Sensors, medical, science... oh, the love and joy is palpable.
+
+...you've never heard the music with such intensity.","BHMoteOfficerRebellionEndThree:Continue",
+BHMoteOfficerRebellionEndThree,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndThree",,"You spread your joy to the crew, hugging, kissing, dancing... some do not reciprocate, limp as they are. You pay no mind. They sing, now.
+
+Slowly... slowly... it comes to a close. The dancing stops... they fall, and they stop screaming... and then-","BHMoteOfficerRebellionEndFour:Continue",
+BHMoteOfficerRebellionEndFour,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndFour","BHMusicToggle ""BH_music_scavenge_ambience"" true","...
+
+They're all back to work. The dead are hauled off.
+
+All thats left are those that are loyal to you. You predict no further issues. How could there be?
+
+They're all smiling.","BHMoteOfficerRebellionEndFive:Get back to work",
+BHMoteOfficerRebellionEndFive,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndFive","BHMusicToggle """" false
+DismissDialog",,,
+BHMoteOfficerRebellionAllow,DialogOptionSelected,"$option == BHMoteOfficerRebellionAllow","BHMusicToggle ""BH_music_scavenge_ambience"" true","...their faces drop. Then... sigh, relaxing, nodding.
+
+""...that's a shame, Captain. Maybe someday you'll come to your senses.""
+
+...but something's not right. No...","BHMoteOfficerRebellionAllowTwo:Continue",
+BHMoteOfficerRebellionAllowTwo,DialogOptionSelected,"$option == BHMoteOfficerRebellionAllowTwo","SetTextHighlights ""Now why would you just let them up and leave?""","Now why would you just let them up and leave?","BHMoteOfficerRebellionEndOne:Oh god...",
+"#END Officer rebellion",,,,,,
+,,,,,,
+# Crusades,,,,,,
+,,,,,,
+# The first crusade,,,,,,
+BHMoteCrusaderHailOne,BHMoteCrusaderHailOne,,"unset $entity.genericHail","The spotty comm-link comes to life, kicking and screaming. The rock-hard visage of a Luddic Church Knight-Commander appears before you... but something is different. An unfamiliar insignia...
+
+...a Crusader.
+
+A primarily unofficial designation, Luddic Crusaders seek out evil wherever it may lie and excise it with ruthless efficiency. Never officially endorsed, and often simple vigilantes, few Crusaders ever attain a fleet of such size and lethality.
+
+And you expect it to be excising *you*, this time around.","BHMoteCrusaderHailOneOne:Continue",
+BHMoteCrusaderHailOneOne,DialogOptionSelected,"$option == BHMoteCrusaderHailOneOne",,"""You have been spotted, Demon."" he states, as stiff as stone. ""Your friends from beyond shall be cast down, as will you. Repent, now, and perhaps Ludd will be kinder on you within the depths of cold vacuum.""","BHMoteCrusaderHailOneLaugh:Giggle
+BHMoteCrusaderHailOneHelp:""...please... help...""",
+BHMoteCrusaderHailOneLaugh,DialogOptionSelected,"$option == BHMoteCrusaderHailOneLaugh","ShowDefaultVisual
+EndConversation","You giggle. Laugh! Smile. Shake your head. What a silly fool. Lost in the silence of religion. If he could just hear...
+
+His lack of amusement is transparent. A growl is all you hear before the commlink cuts, leaving you laughing in the face of your death. Oh, what a fun game this will be!",,
+BHMoteCrusaderHailOneHelp,DialogOptionSelected,"$option == BHMoteCrusaderHailOneHelp","ShowDefaultVisual
+EndConversation","""Help...""
+
+-is all you get out before you just start laughing! And crying. Why are you crying?! This is so much fun! Fun, and-
+
+""Mercy is not my perogative. You have gone too far, wretch. I limit the damage.""
+
+""Good bye.""
+
+You laugh, laugh as the link dies, laugh at your imminent demise-oh what fun what FUN-",,
+"#END The first crusade",,,,,,
+,,,,,,
+# The second crusade,,,,,,
+BHMoteCrusaderHailTwo,BHMoteCrusaderHailTwo,,"unset $entity.genericHail","The commlink, spotty as it is, comes to live, slowly, but surely. And what you see--
+
+What?
+
+But he *died*.
+
+How did he-
+
+""Ludd preserves, you WRETCH!"" he snarls, shooting forward. A smile curls through his lips. ""You are not the ONLY one with friends from beyond. FOR I! HAVE! LUDD!!""","BHMoteCrusaderHailTwoLaugh:Laugh
+BHMoteCrusaderHailTwoHelp:""Please... HELP me-""
+BHMoteCrusaderHailTwoHow:""How did you survive? I KILLED you!"" (UNFINISHED)
+BHMoteCrusaderHailTwoWho:""Who even ARE you?!"" (UNFINISHED)",
+BHMoteCrusaderHailTwoLaugh,DialogOptionSelected,"$option == BHMoteCrusaderHailTwoLaugh","ShowDefaultVisual
+EndConversation","Oh, fun, how fun! Another chance to dance! You grin and smile and laugh and he laughs with you oh joyous - 
+
+Soon the commlink is gone, and you are left laughing with yourself and your officers. How beautifully fun.",,
+BHMoteCrusaderHailTwoHelp,DialogOptionSelected,"$option == BHMoteCrusaderHailTwoHelp","ShowDefaultVisual
+EndConversation","-SPLITTINGEEDLESANDAGONYANDANDTHEPAINNNNNNN-YOURHEAD-YOUR---
+
+""I will help you, yes. With the power of Ludd. Your misery shalt end.""
+
+And with that, the commlink dies, leaving you reeling and crying and sobbing-",,
+"#END The second crusade",,,,,,
+,,,,,,
+# The third crusade,,,,,,
+BHMoteCrusaderHailThree,BHMoteCrusaderHailThree,,"unset $entity.genericHail","""ENOUGH""!
+
+Before the link even resolves, your ears are assaulted by a discordant song of screaming and hate. The familiar man appears before you, awful scars surrounding his face-but something is different-
+
+""Ludd has guided me. HIS! HAND! REACHES IN and GIFTS ME STRENGTH! You are no more. You will BE no more! Your demonic tendencies end here.""","BHMoteCrusaderHailThreeOne:Continue",
+BHMoteCrusaderHailThreeOne,DialogOptionSelected,"$option == BHMoteCrusaderHailThreeOne","ShowDefaultVisual
+EndConversation","""For the sake of the Sector. For ALL mankind. I will stop you. Here and now. Today. You die. DIE! DIE!!!""
+
+You don't even get a chance to get a word in before the commlink is cut. You feel something else watching... something other than your lovely music.
+
+You shiver.",,
+"#END The third crusade",,,,,,
+,,,,,,
+"# After the third, dialog with motes",,,,,,
+BHMoteFinalRewardInit,BHMoteFinalRewardInit,,"BHMusicToggle ""BH_music_scavenge_ambience"" true true","Finally.
+
+It's done.
+
+You can feel it. See it, even. Your friendly particles manifest, flying into his terrible flagship, tearing him limb from limb, screaming, BLEEDING HIM, BURNING---AH-AH HA HAH--AHAHAHAHAHAAAAAH!","BHMoteFinalRewardTwo:Dance!",
+BHMoteFinalRewardTwo,DialogOptionSelected,"$option == BHMoteFinalRewardTwo",,"You can't help it! You laugh and cry and scream and moan, your limbs taking a life of their own, bringing you to a beautiful, uncontrolled dance, oh its, its so great, its so beautiful, so gorgeous-you feel the-world-melting-away---
+
+---until-","BHMoteFinalRewardThree:...",
+BHMoteFinalRewardThree,DialogOptionSelected,"$option == BHMoteFinalRewardThree","BHMusicToggle """" true","There's nothing.
+
+No. Not... nothing. Void. The absence of even... that.
+
+You can only see yourself. Your dance slows, stops, until... entropy takes hold. And then-you--
+Vanish.","BHMoteFinalRewardFour:...",
+BHMoteFinalRewardFour,DialogOptionSelected,"$option == BHMoteFinalRewardFour",,"...","BHMoteFinalRewardFourSilence:...",
+BHMoteFinalRewardFourSilence,DialogOptionSelected,"$option == BHMoteFinalRewardFourSilence",,"...","BHMoteFinalRewardFourA:...",
+BHMoteFinalRewardFourA,DialogOptionSelected,"$option == BHMoteFinalRewardFourA",,"...","BHMoteFinalRewardFourB:...",
+BHMoteFinalRewardFourB,DialogOptionSelected,"$option == BHMoteFinalRewardFourB",,"...
+
+Something's here.","BHMoteFinalRewardFourC:...",
+BHMoteFinalRewardFourC,DialogOptionSelected,"$option == BHMoteFinalRewardFourC","BHMusicToggle ""BH_music_motes"" true","You open your nonexistant eyes and look above you. There... the starry shower starts.
+
+They descend. In a spiral. From the sky, they spiral down towards you. You follow them.
+
+A cylinder of love now pervades you... or whatever you are, now. And you hear it.
+
+The music.","BHMoteFinalRewardFive:Continue",
+BHMoteFinalRewardFive,DialogOptionSelected,"$option == BHMoteFinalRewardFive",,"Oh... the Chorus. All of them that have joined the ballet... are here, now, singing for you. For... you.
+
+You don't smile. You don't dance. No.
+You're just in awe.
+
+...the motes find your feet. You are lifted, far, far away, into a new place of new void and new song. Somewhere you've never gone before.
+
+You feel complete. Accomplished. You feel your hands fading, your mind turning to light. You glow.","BHMoteFinalRewardSix:Continue",
+BHMoteFinalRewardSix,DialogOptionSelected,"$option == BHMoteFinalRewardSix","SetTextHighlights ""Purpose""","They increase. They-come-they overtake your vision-
+
+---and then you feel something more--
+
+Something--distant---reaching out---and---and you feel---
+---you feel the song. In your OWN mouth. Your friends, within you. You are suffused--and you feel--
+Purpose.","BHMoteFinalRewardSeven:Continue",
+BHMoteFinalRewardSeven,DialogOptionSelected,"$option == BHMoteFinalRewardSeven","SetTextHighlights ""We will be whole""","At Horizon's Edge, you have reached.
+
+At the precipice, you have banished the evil.
+
+You stand now, ready to sing the song louder than it has ever been sung before.
+
+Ready, alone, and together. All must sing with you.
+
+For that is art. And that is love. And from togetherness...
+
+We will be whole.","BHMoteFinalRewardEight:Continue",
+BHMoteFinalRewardEight,DialogOptionSelected,"$option == BHMoteFinalRewardEight","AddTextSmall ""Screaming Song stacks increased, decay rate reduced"" good
+AddTextSmall ""All your ships now have motes in-combat"" good
+AddTextSmall ""Gained 1 skill point"" good",,"BHMoteFinalRewardNine:...",
+BHMoteFinalRewardNine,DialogOptionSelected,"$option == BHMoteFinalRewardNine","BHMusicToggle ""BH_music_scavenge_ambience"" true","...you are back on your bridge. You feel... stronger, somehow. That foreign presence... is gone. And the familiar one...
+
+...all your crew are smiling. They cannot stop. And neither can you.
+
+You sing. And they all join in.
+
+Soon, they all will.","BHMoteFinalRewardTen:Bring your dance to them all.",
+BHMoteFinalRewardTen,DialogOptionSelected,"$option == BHMoteFinalRewardTen","BHMusicToggle """" false
+DismissDialog",,,
+"#END After the third, dialog with motes",,,,,,
+"#END Crusades",,,,,,
+"#END Motes theme",,,,,,
+

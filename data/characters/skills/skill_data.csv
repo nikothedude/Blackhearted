@@ -1,0 +1,5 @@
+id,name,order,tier,reqPoints,reqPointsPerExtraSkill,description,author,combat officer,admiral,admin,tags,icon,
+# SPECIAL,,,,,,,,,,,,,
+BHMotesCrusaderSkillFleet,Ludd's Endurance,150,4,0,,dadada,ababa,,TRUE,,"npc_only, ai_core_only, hidden_in_codex",graphics/icons/skills/crew_training.png,
+BHMotesCrusaderSkill,Ludd's Faith,150,4,0,,dadada,ababa,TRUE,,,"npc_only, ai_core_only, hidden_in_codex",graphics/hullmods/high_volition_attractor.png,
+BH_moteSkill,Eternal Song,150,4,0,,"""...reported audial phenomenon... marked as hallucinations... screams heard within...""",excerpt from Hegemony SUPER-ALABASTER datacore breach,TRUE,,,"npc_only, ai_core_only, codex_unlockable",graphics/hullmods/high_volition_attractor.png,

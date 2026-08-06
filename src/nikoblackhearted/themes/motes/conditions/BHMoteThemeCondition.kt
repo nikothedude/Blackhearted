@@ -7,6 +7,8 @@ import com.fs.starfarer.api.impl.campaign.econ.BaseMarketConditionPlugin
 import com.fs.starfarer.api.impl.campaign.population.PopulationComposition
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import nikoblackhearted.Mathutils.roundNumTo
+import nikoblackhearted.Mathutils.trimHangingZero
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
 import sound.int
 
@@ -84,7 +86,7 @@ class BHMoteThemeCondition: BaseMarketConditionPlugin(), MarketImmigrationModifi
                 "Currently reducing stability and population growth by %s and %s, respectively.",
                 10f,
                 Misc.getNegativeHighlightColor(),
-                "${getStabMalus()}", "${getPopMalus()}"
+                "${getStabMalus()}", "${getPopMalus().roundNumTo(1).trimHangingZero()}"
             )
         }
     }

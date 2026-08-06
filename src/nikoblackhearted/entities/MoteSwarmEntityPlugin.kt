@@ -104,6 +104,9 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
                 Misc.ZERO
             )
 
+            val newVel = Vector2f(fleet.velocity).scale(0.2f) as Vector2f
+            fleet.setVelocity(newVel.x, newVel.y)
+
             fleet.stats.addTemporaryModFlat(
                 1f,
                 "${this}_1",

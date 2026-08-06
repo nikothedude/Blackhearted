@@ -25,12 +25,6 @@ class BHIntroIntel: BaseIntelPlugin() {
         fun get(): IntelInfoPlugin? = Global.getSector().intelManager.getFirstIntel(BHIntroIntel::class.java)
     }
 
-    override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
-        if (info == null) return
-
-        val plugin = BHHandler.getThemePlugin() ?: return
-    }
-
     override fun hasLargeDescription(): Boolean {
         return true
     }
@@ -68,7 +62,7 @@ class BHIntroIntel: BaseIntelPlugin() {
             Misc.getHighlightColor(),
         ).color = Misc.getGrayColor()
         main.addPara(
-            "The light reaches out... it touches you, undoing the seams around your mouth, begging you to speak, asking you the question you've forgotton yourself, asking you, asking you...",
+            "The light reaches out... it touches you, undoing the seams around your mouth, begging you to speak, asking you the question you've forgotten yourself, asking you, asking you...",
             5f
         ).color = Misc.getGrayColor()
 

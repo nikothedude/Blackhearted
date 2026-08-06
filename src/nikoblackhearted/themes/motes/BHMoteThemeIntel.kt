@@ -9,6 +9,7 @@ import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.Industries
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseOneTimeFactor
 import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
@@ -25,7 +26,10 @@ import nikoblackhearted.BHSettings
 import nikoblackhearted.FleetHelpers.isCivilian
 import nikoblackhearted.FleetHelpers.isOutcast
 import nikoblackhearted.locks.LevelLock
+import nikoblackhearted.locks.MemoryLock
 import nikoblackhearted.themes.BHThemeMainIntel
+import nikoblackhearted.themes.crusades.BHMoteCrusadeManager
+import nikoblackhearted.themes.motes.combat.BHMoteOnDeathPlugin
 import nikoblackhearted.themes.motes.combat.BHMoteRingPlugin
 import nikoblackhearted.themes.motes.factors.BHMoteAgentHint
 import nikoblackhearted.themes.motes.factors.BHMoteFleetDestructionHint
@@ -47,9 +51,10 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         const val BASE_MAX_SONG_STACKS = 10
         const val MIN_SONG_DECAY_TIME = 88f
         const val MAX_SONG_DECAY_TIME = 92f
-        const val STACK_DECAY_MULT = 1.2f
+        const val STACK_DECAY_MULT = 0.5f
         const val VENGEFUL_AT_PROGRESS_PERCENT = 0.8f
         const val PROGRESS_FRAC_TO_MOTE_RING_MULT = 40f
+        const val PROGRESS_FRAC_TO_COMBAT_MOTE_RING_MULT = 0.7f
         const val PROGRESS_FRAC_TO_MOTE_RING_RESPAWN_MULT = 0.5f
 
         const val AGENT_DESTABILIZE_BASE_POINTS = 5f
@@ -89,13 +94,16 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
 
                         tooltip.addPara(
                             "Grants you an ability which allows you to summon %s in a ring around your fleet. These %s will " +
-                            "act as a shield against %s, %s on impact.",
+                            "act as a shield against %s, %s on impact. The %s and %s of your motes %s as this event progresses.",
                             10f,
                             Misc.getHighlightColor(),
-                            "motes", "motes", "hostile fleets", "slowing them"
+                            "motes", "motes", "hostile fleets", "slowing them", "maximum", "regen rate", "increase"
                         ).setHighlightColors(
                             color,
                             color,
+                            Misc.getHighlightColor(),
+                            Misc.getPositiveHighlightColor(),
+                            Misc.getHighlightColor(),
                             Misc.getHighlightColor(),
                             Misc.getPositiveHighlightColor()
                         )
@@ -271,6 +279,10 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                             10f,
                             Misc.getHighlightColor(),
                             "mote attractors", "invites motes", "Unnerved"
+                        ).setHighlightColors(
+                            Misc.getHighlightColor(),
+                            Misc.getHighlightColor(),
+                            Misc.getNegativeHighlightColor()
                         )
                     }
                 }
@@ -305,6 +317,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
+                intel.combatMoteStrikeReached = true
                 return
             }
 
@@ -353,7 +366,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                             "These bonuses last for around %s before a stack will decay. Having multiple stacks will %s per stack. Maximum of %s stacks.",
                             10f,
                             Misc.getPositiveHighlightColor(),
-                            "90 days", "increase decay rate by ${1 + STACK_DECAY_MULT}x", "$BASE_MAX_SONG_STACKS"
+                            "90 days", "increase decay rate by ${((STACK_DECAY_MULT) * 100f).toInt()}%", "$BASE_MAX_SONG_STACKS"
                         ).setHighlightColors(
                             Misc.getHighlightColor(),
                             Misc.getNegativeHighlightColor(),
@@ -366,6 +379,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
 
             override fun onReached(intel: BHMoteThemeIntel) {
                 intel.screamingSongsActive = true
+                Global.getSector().playerPerson.stats.setSkillLevel("BH_moteSkill", 2f)
             }
         },
         CRUSADE_ONE("The Damnable Crusade") {
@@ -381,12 +395,20 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                         tooltipParam: Any?
                     ) {
                         tooltip.addTitle(uiName)
+
+                        tooltip.addPara(
+                            "Unrest, liberation, and a valiant knight chasing his white whale.",
+                            10f
+                        ).color = Misc.getNegativeHighlightColor()
                     }
                 }
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
-                return
+                BHMoteCrusadeManager.spawnCrusadeOrKillfleet(
+                    Global.getSector().playerFleet.fleetPoints * 1.1f,
+                    BHMoteCrusadeManager.Stage.ONE
+                )
             }
 
             override fun getIcon(): String {
@@ -440,6 +462,23 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                         tooltipParam: Any?
                     ) {
                         tooltip.addTitle(uiName)
+
+                        tooltip.addPara(
+                            "When an enemy ship is disabled within range of one of your ships, grants a %s, with larger hull sizes manifesting %s.",
+                            10f,
+                            Misc.getPositiveHighlightColor(),
+                            "small chance for a mote to spawn", "more motes"
+                        )
+
+                        tooltip.addPara(
+                            "Additionally, spawns a %s whenever one of %s ships are disabled.",
+                            10f,
+                            Misc.getPositiveHighlightColor(),
+                            "mote swarm", "your"
+                        ).setHighlightColors(
+                            Misc.getPositiveHighlightColor(),
+                            Misc.getNegativeHighlightColor()
+                        )
                     }
                 }
             }
@@ -462,12 +501,20 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                         tooltipParam: Any?
                     ) {
                         tooltip.addTitle(uiName)
+
+                        tooltip.addPara(
+                            "The second dagger.",
+                            10f
+                        ).color = Misc.getNegativeHighlightColor()
                     }
                 }
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
-                return
+                BHMoteCrusadeManager.spawnCrusadeOrKillfleet(
+                    Global.getSector().playerFleet.fleetPoints * 1.2f,
+                    BHMoteCrusadeManager.Stage.TWO
+                )
             }
 
             override fun getIcon(): String {
@@ -485,11 +532,24 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                         tooltipParam: Any?
                     ) {
                         tooltip.addTitle(uiName)
+
+                        tooltip.addPara(
+                            "%s, if your flagship would become disabled by damage, %s and %s from nearby ships while dealing %s, prioritizing hostiles over friendlies.",
+                            10f,
+                            Misc.getHighlightColor(),
+                            "Once per combat", "become invincible", "steal hull and armor", "crippling EMP damage"
+                        ).setHighlightColors(
+                            Misc.getHighlightColor(),
+                            Misc.getPositiveHighlightColor(),
+                            Misc.getPositiveHighlightColor(),
+                            Misc.getPositiveHighlightColor()
+                        )
                     }
                 }
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
+                intel.rebirthActive = true
                 return
             }
         },
@@ -508,12 +568,26 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                         tooltipParam: Any?
                     ) {
                         tooltip.addTitle(uiName)
+
+                        tooltip.addPara(
+                            "Unrest rises. A certain hubris rears its ugly head, one last time.",
+                            10f
+                        ).color = Misc.getNegativeHighlightColor()
+
+                        tooltip.addPara(
+                            "BETA NOTE - Spawns invasions, rebellions, and a final encounter with the crusader. " +
+                                    "The crusader should have a skill that gives ALL ITS SHIPS one respawn per fight",
+                            10f
+                        )
                     }
                 }
             }
 
             override fun onReached(intel: BHMoteThemeIntel) {
-                return
+                BHMoteCrusadeManager.spawnCrusadeOrKillfleet(
+                    Global.getSector().playerFleet.fleetPoints * 1.5f,
+                    BHMoteCrusadeManager.Stage.THREE
+                )
             }
 
             override fun getIcon(): String {
@@ -568,11 +642,15 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
 
     var moteRingReached: Boolean = false
     var moteStrikeReached: Boolean = false
+    var combatMoteStrikeReached = false
+    var fleetwideCombatMotes: Boolean = false
     var screamingSongsActive: Boolean = false
     var moteDeathReached = false
     var unnerved = false
+    var rebirthActive = false
     var currSongStacks = 0
     var maxSongStacks = BASE_MAX_SONG_STACKS
+    var extraSongDecayMult = 1f
     val songDecayInterval = IntervalUtil(MIN_SONG_DECAY_TIME, MAX_SONG_DECAY_TIME)
 
     override fun init() {
@@ -590,10 +668,12 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         addStage(Stage.COMBAT_STRIKE, 800)
         addStage(Stage.SATBOMB_BONUS, 1000)
         addStage(Stage.CRUSADE_ONE, 1200)
-        locks += LevelLock(1000, 10)
+        locks += MemoryLock(1250, "BHMoteCrusadeOneDefeated", "the crusade is defeated")
+        locks += LevelLock(1250, 10)
         addStage(Stage.TORMENT_NEXUS, 1300)
         addStage(Stage.MOTE_DEATH, 1500)
         addStage(Stage.CRUSADE_TWO, 1700)
+        locks += MemoryLock(2000, "BHMoteCrusadeTwoDefeated", "the crusade is defeated")
         locks += LevelLock(2000, 15)
         addStage(Stage.MOTE_LIFESTEAL, 2100)
         addStage(Stage.THE_FINAL_CHARGE, maxProgress)
@@ -618,7 +698,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             }
         }
 
-        if (unnerved) {
+        if (unnerved || screamingSongsActive) {
             conditionAddInterval.advance(days)
             if (conditionAddInterval.intervalElapsed()) {
                 applyConditions()
@@ -628,8 +708,15 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
 
     private fun applyConditions() {
         for (market in Global.getSector().playerFaction.getMarketsCopy()) {
-            if (!market.hasCondition("BHMoteThemeCondition")) {
-                market.addCondition("BHMoteThemeCondition")
+            if (unnerved) {
+                if (!market.hasCondition("BHMoteThemeCondition")) {
+                    market.addCondition("BHMoteThemeCondition")
+                }
+            }
+            if (screamingSongsActive) {
+                if (!market.hasCondition("BHMoteScreamingCondition")) {
+                    market.addCondition("BHMoteScreamingCondition")
+                }
             }
         }
     }
@@ -649,13 +736,13 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         )
         playerFleet.stats.accelerationMult.modifyMult(
             "BHSingingScreamsBurn",
-            (currSongStacks.toFloat() * 0.2f),
+            (currSongStacks.toFloat() * 1.2f),
             "Screaming Songs"
         )
     }
 
     private fun getSongDecayMult(): Float {
-        return (1f + ((currSongStacks - 1f) * STACK_DECAY_MULT)).coerceAtLeast(1f)
+        return ((1f + ((currSongStacks - 1f) * STACK_DECAY_MULT)) * extraSongDecayMult)
     }
 
     override fun addPreEventBar(main: TooltipMakerAPI) {
@@ -668,7 +755,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         )
         label.color = Misc.getGrayColor()
         label.italicize()
-        val labelTwo = main.addPara(
+        main.addPara(
             "For as long as I could remember, I saw the spots, the stars, the eyes. How would they react... if they saw... too?",
             5f,
             Misc.getGrayColor(),
@@ -728,11 +815,12 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
 
         if (screamingSongsActive) {
             main.addPara(
-                "You have %s stacks of %s.",
+                "You have %s/%s stacks of %s.",
                 10f,
                 Misc.getHighlightColor(),
-                "$currSongStacks", "screaming songs"
+                "$currSongStacks", "$maxSongStacks", "screaming songs"
             ).setHighlightColors(
+                Misc.getHighlightColor(),
                 Misc.getHighlightColor(),
                 color
             )
@@ -762,11 +850,11 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
                 stage.uiName
             )
             if (!Global.getSettings().isDevMode) {
-                Global.getSoundPlayer().playUISound(
+                /*Global.getSoundPlayer().playUISound(
                     "BH_moteLaughter",
                     1f,
                     1f
-                )
+                )*/
             }
         }
 
@@ -806,9 +894,19 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
     }
 
     fun getPlayerMaxMotes(): Int {
-        if (!isStageActive(Stage.MOTE_RINGS)) return 0
+        if (!moteRingReached) return 0
 
         return (progressFraction * PROGRESS_FRAC_TO_MOTE_RING_MULT).toInt()
+    }
+
+    fun getCombatMaxMotesMult(playerShip: Boolean): Float {
+        if (!moteRingReached) return 0f
+
+        var mult = 1f + (progressFraction * PROGRESS_FRAC_TO_COMBAT_MOTE_RING_MULT)
+        if (!playerShip) {
+            mult *= 0.5f
+        }
+        return mult.coerceAtLeast(1f)
     }
 
     fun getPlayerMoteRespawnDelayMult(): Float {
@@ -832,6 +930,14 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         super.setProgress(progress)
 
         handleNewRep(progressFraction)
+        if (progressFraction >= 0.5f && !Global.getSector().memoryWithoutUpdate.getBoolean("\$BHMoteDidOfficerRebellion")) {
+            handleOfficerRebellion()
+        }
+    }
+
+    private fun handleOfficerRebellion() {
+        BHMoteOfficerRebellionScript().start()
+        Global.getSector().memoryWithoutUpdate.set("\$BHMoteDidOfficerRebellion", true)
     }
 
     override fun reportBattleOccurred(
@@ -849,6 +955,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         var outcastFpDestroyed = 0f
         var warFpDestroyed = 0f
         for (otherFleet in battle.nonPlayerSideSnapshot) {
+            if (otherFleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_LOW_REP_IMPACT) || otherFleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) return
             val isCiv = otherFleet.isCivilian()
             val isOutcast = otherFleet.isOutcast()
             for (loss in Misc.getSnapshotMembersLost(otherFleet)) {
@@ -1061,7 +1168,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         if (def.id == null) return
         if (def.name == null) return
 
-        var mult = (intel.market.size - 2f) * 0.5f
+        var mult = (intel.market.size - 2f)
 
         var factor: BHMoteGenericFactor? = null
 
@@ -1111,6 +1218,9 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
     override fun combatInitialized(engine: CombatEngineAPI) {
         if (moteRingReached) {
             engine.addPlugin(BHMoteRingPlugin(this, engine))
+        }
+        if (moteDeathReached) {
+            engine.listenerManager.addListener(BHMoteOnDeathPlugin())
         }
     }
 }

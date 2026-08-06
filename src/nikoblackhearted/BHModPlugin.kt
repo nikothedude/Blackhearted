@@ -2,6 +2,8 @@ package nikoblackhearted
 
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
+import lunalib.lunaSettings.LunaSettings
+import lunalib.lunaSettings.LunaSettingsListener
 import nikoblackhearted.themes.motes.industries.BHTormentNexusInd
 
 class BHModPlugin : BaseModPlugin() {
@@ -9,7 +11,7 @@ class BHModPlugin : BaseModPlugin() {
        * It is most useful for loading data that only really needs to be setup once. */
     @Throws(Exception::class)
     override fun onApplicationLoad() {
-    BHSettings.getLoadedMods()
+        BHSettings.getLoadedMods()
         BHSettings.loadSettings()
     }
 
@@ -19,7 +21,15 @@ class BHModPlugin : BaseModPlugin() {
     * This method is most useful for adding transient listeners/scripts and for enabling mid-save compatibility,
     * like adding star systems to an existing save if the mod was just added. */
     override fun onGameLoad(newGame: Boolean) {
+        LunaSettings.addSettingsListener(BHSettingsChangedListener())
         Global.getSector().listenerManager.addListener(BHTormentNexusInd.TormentNexusOptAdder(), true)
+        BHPeople.createCharacters()
+    }
+
+    class BHSettingsChangedListener: LunaSettingsListener {
+        override fun settingsChanged(modID: String) {
+            BHSettings.loadSettings()
+        }
     }
 
     /*Runs when a save is created.

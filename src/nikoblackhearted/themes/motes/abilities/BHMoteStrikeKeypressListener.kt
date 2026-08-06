@@ -76,7 +76,7 @@ class BHMoteStrikeKeypressListener: CampaignInputListener {
                         )
                     }
 
-                    deactivate(false)
+                    //deactivate(false)
                 } else {
                     Global.getSoundPlayer().playUISound("ui_button_disabled_pressed", 1f, 1f)
                 }

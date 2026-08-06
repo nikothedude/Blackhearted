@@ -20,6 +20,8 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import lunalib.backend.ui.components.LunaUITextFieldWithSlider
 import nikoblackhearted.DialogUtils.getChildrenCopy
+import nikoblackhearted.Mathutils.roundNumTo
+import nikoblackhearted.Mathutils.trimHangingZero
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
 import org.magiclib.kotlin.getImmigrationPlugin
 import org.magiclib.kotlin.getMarketSizeProgress
@@ -27,7 +29,7 @@ import org.magiclib.kotlin.getMarketSizeProgress
 class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
 
     companion object {
-        const val DECREMENT_TO_PER_DAY_PROGRESS = 0.5f
+        const val DECREMENT_TO_PER_DAY_PROGRESS = 0.3f
     }
 
     var currentDecrement = 0f
@@ -310,7 +312,7 @@ class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
                 "Current pop growth malus: %s. Current Stack generation per day: %s",
                 10f,
                 Misc.getNegativeHighlightColor(),
-                "${ind.currentDecrement.toInt()}", "${ind.getStackGen(ind.currentDecrement, 1f)}"
+                "${ind.currentDecrement.roundNumTo(1).trimHangingZero()}", "${ind.getStackGen(ind.currentDecrement, 1f).roundNumTo(1).trimHangingZero()}"
             ).setHighlightColors(
                 Misc.getNegativeHighlightColor(),
                 Misc.getPositiveHighlightColor()

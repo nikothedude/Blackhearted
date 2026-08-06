@@ -2,4 +2,21 @@
 	"BH_choseDestiny":{"sounds":[
 		{"file":"sounds/sfx_charscreen/charscreen-aptitude_max.ogg","pitch":1,"volume":0.4},
 	],},
+	
+	#collapseopen MUSIC
+		
+	"music":{
+		####################################
+		# "source" can also be a directory #
+		####################################
+
+		"BH_music_scavenge_ambience":[
+			{"file":"scavenge_ambience_v1.ogg","source":"sounds/music/music.bin","volume":1} 
+		],
+		"BH_music_motes":[
+			{"file":"BHMoteMusic.ogg","source":"sounds/music", "volume":1} 
+		],
+		
+	# collapseclose
+	},
 },

@@ -8,10 +8,10 @@ class BHCombatPlugin: BaseEveryFrameCombatPlugin() {
     val engine = Global.getCombatEngine()
 
     override fun advance(amount: Float, events: List<InputEventAPI?>?) {
-        if (engine.isPaused || engine.isSimulation) return
+        if (engine == null) return
 
         val intel = BHHandler.getThemeIntel()
-        intel.combatInitialized(engine)
+        intel?.combatInitialized(engine)
 
         engine.removePlugin(this)
     }

@@ -1,2 +1,3 @@
 name,id,tags,planetary,decivRemove,script,desc,icon,order
-Unnerved,BHMoteThemeCondition,hide_in_codex,FALSE,FALSE,nikoblackhearted.themes.motes.conditions.BHMoteThemeCondition,"The increasingly creative policies of this polity are unnerving the populace, creating a general sense of dread and pushing away potential immigrants.",graphics/icons/markets/dissidents.png,10
+Screaming Songs,BHMoteScreamingCondition,hide_in_codex,FALSE,FALSE,nikoblackhearted.themes.motes.conditions.BHMoteScreamingCondition,"Isn't it so grand?! They join us in song! Come, join us, and scream with them...",graphics/hullmods/high_volition_attractor.png,10
+Unnerved,BHMoteThemeCondition,hide_in_codex,FALSE,FALSE,nikoblackhearted.themes.motes.conditions.BHMoteThemeCondition,"The increasingly creative policies of this polity are unnerving the populace, creating a general sense of dread and pushing away potential immigrants.",graphics/icons/markets/dissidents.png,11

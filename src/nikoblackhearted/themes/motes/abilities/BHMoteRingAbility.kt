@@ -103,7 +103,7 @@ class BHMoteRingAbility: BaseToggleAbility() {
             "Summons a ring of %s around your fleet that %s, %s and %s while also %s.",
             pad,
             Misc.getHighlightColor(),
-            "motes", "strike nearby hostile fleets", "slowing them", "reducing their sensor range", "dealing minor CR damage"
+            "motes", "strike nearby hostile fleets", "slowing them", "reducing their sensor range", "increasing sensor profile"
         ).setHighlightColors(
             BHMoteThemeIntel.color,
             Misc.getPositiveHighlightColor(),

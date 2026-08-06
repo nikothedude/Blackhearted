@@ -2,6 +2,7 @@ package nikoblackhearted.themes
 
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.ids.Tags.INTEL_MAJOR_EVENT
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
 import com.fs.starfarer.api.ui.Alignment
@@ -43,12 +44,12 @@ abstract class BHThemeIntel: BaseEventIntel() {
         val main = panel.createUIElement(width, height, true)
 
         main.setTitleOrbitronVeryLarge()
-        main.addTitle(getName(), Misc.getBasePlayerColor())
+        main.addTitle(name, Misc.getBasePlayerColor())
 
         addPreEventBar(main)
 
         val bar = main.addEventProgressBar(this, 80f)
-        val barTC = getBarTooltip()
+        val barTC = barTooltip
         if (barTC != null) {
             main.addTooltipToPrevious(barTC, TooltipLocation.BELOW, false)
         }
@@ -66,8 +67,8 @@ abstract class BHThemeIntel: BaseEventIntel() {
 
             val data = createDisplayData(curr.id)
             val marker = main.addEventStageMarker(data)
-            val xOff = bar.getXCoordinateForProgress(curr.progress.toFloat()) - bar.getPosition().getX()
-            marker.getPosition().aboveLeft(bar, data.downLineLength).setXAlignOffset(xOff - data.size / 2f - 1)
+            val xOff = bar.getXCoordinateForProgress(curr.progress.toFloat()) - bar.position.x
+            marker.position.aboveLeft(bar, data.downLineLength).setXAlignOffset(xOff - data.size / 2f - 1)
 
             val tc = getStageTooltip(curr.id)
             if (tc != null) {
@@ -79,9 +80,9 @@ abstract class BHThemeIntel: BaseEventIntel() {
         // progress indicator
         run {
             val marker = main.addEventProgressMarker(this)
-            val xOff = bar.getXCoordinateForProgress(progress.toFloat()) - bar.getPosition().getX()
-            marker.getPosition().belowLeft(bar, -getBarProgressIndicatorHeight() * 0.5f - 2)
-                .setXAlignOffset(xOff - getBarProgressIndicatorWidth() / 2 - 1)
+            val xOff = bar.getXCoordinateForProgress(progress.toFloat()) - bar.position.x
+            marker.position.belowLeft(bar, -barProgressIndicatorHeight * 0.5f - 2)
+                .setXAlignOffset(xOff - barProgressIndicatorWidth / 2 - 1)
         }
 
         main.addSpacer(opad)
@@ -94,7 +95,7 @@ abstract class BHThemeIntel: BaseEventIntel() {
 
         afterStageDescriptions(main)
 
-        val barW = getBarWidth()
+        val barW = barWidth
         var factorWidth = (barW - opad) / 2f
 
         if (withMonthlyFactors() != withOneTimeFactors()) {
@@ -104,21 +105,21 @@ abstract class BHThemeIntel: BaseEventIntel() {
 
         val mFac = main.beginSubTooltip(factorWidth)
 
-        val c = getFactionForUIColors().getBaseUIColor()
-        val bg = getFactionForUIColors().getDarkUIColor()
-        mFac.addSectionHeading("Monthly factors", c, bg, Alignment.MID, opad).getPosition().setXAlignOffset(0f)
+        val c = factionForUIColors.baseUIColor
+        val bg = factionForUIColors.darkUIColor
+        mFac.addSectionHeading("Monthly factors", c, bg, Alignment.MID, opad).position.setXAlignOffset(0f)
 
         val strW = 40f
         val rh = 20f
         //rh = 15f;
         mFac.beginTable2(
-            getFactionForUIColors(), rh, false, false,
+            factionForUIColors, rh, false, false,
             "Monthly factors", factorWidth - strW - 3,
             "Progress", strW
         )
 
         for (factor in factors) {
-            if (factor.isOneTime()) continue
+            if (factor.isOneTime) continue
             if (!factor.shouldShow(this)) continue
 
             val desc = factor.getDesc(this)
@@ -138,16 +139,16 @@ abstract class BHThemeIntel: BaseEventIntel() {
 
         //mFac.addButton("TEST", new String(), factorWidth, 20f, opad);
         mFac.addTable("None", -1, opad)
-        mFac.getPrev().getPosition().setXAlignOffset(-5f)
+        mFac.prev.position.setXAlignOffset(-5f)
 
         main.endSubTooltip()
 
         val oFac = main.beginSubTooltip(factorWidth)
 
-        oFac.addSectionHeading("Recent one-time factors", c, bg, Alignment.MID, opad).getPosition().setXAlignOffset(0f)
+        oFac.addSectionHeading("Recent one-time factors", c, bg, Alignment.MID, opad).position.setXAlignOffset(0f)
 
         oFac.beginTable2(
-            getFactionForUIColors(), 20f, false, false,
+            factionForUIColors, 20f, false, false,
             "One-time factors", factorWidth - strW - 3,
             "Progress", strW
         )
@@ -155,7 +156,7 @@ abstract class BHThemeIntel: BaseEventIntel() {
         val reversed: MutableList<EventFactor> = ArrayList<EventFactor>(factors)
         Collections.reverse(reversed)
         for (factor in reversed) {
-            if (!factor.isOneTime()) continue
+            if (!factor.isOneTime) continue
             if (!factor.shouldShow(this)) continue
 
             val desc = factor.getDesc(this)
@@ -173,18 +174,18 @@ abstract class BHThemeIntel: BaseEventIntel() {
         }
 
         oFac.addTable("None", -1, opad)
-        oFac.getPrev().getPosition().setXAlignOffset(-5f)
+        oFac.prev.position.setXAlignOffset(-5f)
         main.endSubTooltip()
 
 
-        val factorHeight = max(mFac.getHeightSoFar(), oFac.getHeightSoFar())
-        mFac.setHeightSoFar(factorHeight)
-        oFac.setHeightSoFar(factorHeight)
+        val factorHeight = max(mFac.heightSoFar, oFac.heightSoFar)
+        mFac.heightSoFar = factorHeight
+        oFac.heightSoFar = factorHeight
 
 
         if (withMonthlyFactors() && withOneTimeFactors()) {
             main.addCustom(mFac, opad * 2f)
-            main.addCustomDoNotSetPosition(oFac).getPosition().rightOfTop(mFac, opad)
+            main.addCustomDoNotSetPosition(oFac).position.rightOfTop(mFac, opad)
         } else if (withMonthlyFactors()) {
             main.addCustom(mFac, opad * 2f)
         } else if (withOneTimeFactors()) {
@@ -260,6 +261,7 @@ abstract class BHThemeIntel: BaseEventIntel() {
             tags.add(Tags.INTEL_IMPORTANT)
         }
         tags += BHHandler.INTEL_KEY
+        tags += INTEL_MAJOR_EVENT
         return tags
     }
 }
