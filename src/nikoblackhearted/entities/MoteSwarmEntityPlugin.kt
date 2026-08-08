@@ -3,24 +3,21 @@ package nikoblackhearted.entities
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignEngineLayers
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.combat.ViewportAPI
-import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.entities.Mote.Companion.translateTowardsAngle
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
-import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.addHitGlow
-import org.magiclib.kotlin.fadeAndExpire
 import java.awt.Color
-import java.util.HashSet
-import kotlin.math.cos
 import kotlin.math.sign
-import kotlin.math.sin
 
 class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
 
@@ -133,6 +130,22 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
                     color,
                     3,
                     5f
+                )
+            }
+
+            if (fleet.knowsWhoPlayerIs() && !fleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) {
+                val impact = CoreReputationPlugin.CustomRepImpact()
+                impact.delta = -0.01f
+                impact.ensureAtWorst = RepLevel.HOSTILE
+
+                val action = CoreReputationPlugin.RepActionEnvelope(
+                    CoreReputationPlugin.RepActions.CUSTOM, impact,
+                    null, false
+                )
+                action.reason = "Change caused by esoteric particle impact"
+                Global.getSector().adjustPlayerReputation(
+                    action,
+                    fleet.faction.id
                 )
             }
 

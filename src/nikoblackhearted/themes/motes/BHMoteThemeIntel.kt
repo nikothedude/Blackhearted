@@ -54,7 +54,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         const val STACK_DECAY_MULT = 0.5f
         const val VENGEFUL_AT_PROGRESS_PERCENT = 0.8f
         const val PROGRESS_FRAC_TO_MOTE_RING_MULT = 40f
-        const val PROGRESS_FRAC_TO_COMBAT_MOTE_RING_MULT = 0.7f
+        const val PROGRESS_FRAC_TO_COMBAT_MOTE_RING_MULT = 1f
         const val PROGRESS_FRAC_TO_MOTE_RING_RESPAWN_MULT = 0.5f
 
         const val AGENT_DESTABILIZE_BASE_POINTS = 5f

@@ -197,25 +197,4 @@ class BHMoteRingPlugin(val intel: BHMoteThemeIntel, val engine: CombatEngineAPI)
             return
         }
     }
-
-    class MoteFadeInPlugin(val mote: MissileAPI, val engine: CombatEngineAPI): BaseEveryFrameCombatPlugin() {
-        val dur = IntervalUtil(0.5f, 0.5f)
-
-        override fun advance(amount: Float, events: List<InputEventAPI?>?) {
-            super.advance(amount, events)
-
-            if (engine.isPaused) return
-            dur.advance(amount)
-
-            val alpha = (dur.elapsed / dur.intervalDuration)
-            /*mote.spriteAlphaOverride = 255f * alpha
-            mote.setShineBrightness(0f)
-            mote.engineController.shipEngines.forEach { it.engineColor.setAlpha((255f * alpha).toInt().coerceAtMost(255)) }*/
-
-            if (dur.intervalElapsed()) {
-                mote.spriteAlphaOverride = 1f
-                engine.removePlugin(this)
-            }
-        }
-    }
 }

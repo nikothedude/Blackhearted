@@ -13,7 +13,6 @@ import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.missions.hub.MissionTrigger
 import exerelin.campaign.fleets.InvasionFleetManager
-import exerelin.campaign.intel.invasion.InvasionIntel
 import exerelin.campaign.intel.rebellion.RebellionCreator
 import exerelin.campaign.intel.rebellion.RebellionIntel
 import nikoblackhearted.BHBaseNikoScript
@@ -264,7 +263,8 @@ object BHMoteCrusadeManager {
                 fp *= stage.getInvasionFPMult()
 
                 //fp *= MathUtils.getRandomNumberInRange(0.8f, 1.2f);
-                val intel = InvasionIntel(Global.getSector().getFaction(Factions.INDEPENDENT), invasionSource, rand, fp, 1f)
+                Global.getSector().getFaction(Factions.INDEPENDENT).relToPlayer.rel = Global.getSector().getFaction(Factions.INDEPENDENT).relToPlayer.rel.coerceAtMost(-0.5f)
+                val intel = BHCrusadeIntel(Global.getSector().getFaction(Factions.INDEPENDENT), invasionSource, rand, fp, 1f)
                 intel.isAbortIfNonHostile = false
                 intel.init()
             }

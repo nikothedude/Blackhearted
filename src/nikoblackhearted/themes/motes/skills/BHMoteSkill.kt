@@ -15,6 +15,8 @@ import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.util.FaderUtil
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.combat.systems.EmpArcEntity
+import com.fs.starfarer.combat.systems.EmpArcVisual
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
@@ -142,6 +144,8 @@ class BHMoteSkill {
         var triggered = false
         var done = false
 
+        val arcs = HashSet<EmpArcVisual>()
+
         init {
             Global.getSettings().loadTexture("graphics/BHBlackScreen.png")
             Global.getSettings().loadTexture("graphics/BHVignette.png")
@@ -222,6 +226,8 @@ class BHMoteSkill {
                 }
             }
 
+            arcs.forEach { it.advance(finalAmount) }
+
         }
 
         override fun isExpired(): Boolean {
@@ -267,7 +273,8 @@ class BHMoteSkill {
                     BHMoteThemeIntel.color.brighter(),
                     BHMoteThemeIntel.color,
                     params
-                )
+                ) as EmpArcVisual
+                arcs += arc
                 arc.setSingleFlickerMode(true)
                 Global.getSoundPlayer().playSound(
                     "mote_attractor_launch_mote",

@@ -1,0 +1,15 @@
+0.0.1
+SAVE COMPATIBLE
+
+Reflavors crusade invasions
+Crusade invasions now make indies hostile
+
+Mote respawn now correctly animates the arcs
+
+Incombat mote scaling increased
+
+Mote strike now deactivates if you run out of motes/doesnt deactivate every time you use it
+
+Mote attractor is now inert on non-player markets
+
+Mote now reduce rep by 1 on hit
