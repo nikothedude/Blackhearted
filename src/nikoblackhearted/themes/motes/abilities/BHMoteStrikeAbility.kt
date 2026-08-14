@@ -43,7 +43,6 @@ class BHMoteStrikeAbility: BaseDurationAbility() {
         if (isUsable && !turnedOn) {
             if (fleet.isPlayerFleet) {
                 if (BHMoteStrikeKeypressListener.get(false)?.active != true) {
-
                     if (!canFire()) {
                         Global.getSector().campaignUI.messageDisplay.addMessage(
                             "No motes to launch",
@@ -78,8 +77,9 @@ class BHMoteStrikeAbility: BaseDurationAbility() {
                     }
 
                     DelayedScript().start()
+                } else {
+                    BHMoteStrikeKeypressListener.get(false)?.deactivate(true)
                 }
-
             }
         }
     }

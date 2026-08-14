@@ -522,6 +522,36 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             }
         },
         // endgame, past here
+        ROAMING_MOTES("A Lovely Parade") {
+            // once per fight, if your ship dies, siphon hull from nearby ships (your own included) to repair yourself
+            override fun createTooltip(): TooltipMakerAPI.TooltipCreator {
+                return object : BaseStageTooltip() {
+                    override fun createTooltip(
+                        tooltip: TooltipMakerAPI,
+                        expanded: Boolean,
+                        tooltipParam: Any?
+                    ) {
+                        tooltip.addTitle(uiName)
+
+                        tooltip.addPara(
+                            "Your %s will begin spawning %s on colonies with a size %s.",
+                            10f,
+                            Misc.getHighlightColor(),
+                            "mote attractors", "roaming mote swarms", "at or above 5"
+                        ).setHighlightColors(
+                            Misc.getHighlightColor(),
+                            Misc.getPositiveHighlightColor(),
+                            Misc.getHighlightColor()
+                        )
+                    }
+                }
+            }
+
+            override fun onReached(intel: BHMoteThemeIntel) {
+                intel.roamingMotesActive = true
+                return
+            }
+        },
         MOTE_LIFESTEAL("The Eternal Dance") {
             // once per fight, if your ship dies, siphon hull from nearby ships (your own included) to repair yourself
             override fun createTooltip(): TooltipMakerAPI.TooltipCreator {
@@ -648,6 +678,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
     var moteDeathReached = false
     var unnerved = false
     var rebirthActive = false
+    var roamingMotesActive = false
     var currSongStacks = 0
     var maxSongStacks = BASE_MAX_SONG_STACKS
     var extraSongDecayMult = 1f
@@ -673,7 +704,8 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         addStage(Stage.TORMENT_NEXUS, 1300)
         addStage(Stage.MOTE_DEATH, 1500)
         addStage(Stage.CRUSADE_TWO, 1700)
-        locks += MemoryLock(2000, "BHMoteCrusadeTwoDefeated", "the crusade is defeated")
+        locks += MemoryLock(1800, "BHMoteCrusadeTwoDefeated", "the crusade is defeated")
+        addStage(Stage.ROAMING_MOTES, 1850)
         locks += LevelLock(2000, 15)
         addStage(Stage.MOTE_LIFESTEAL, 2100)
         addStage(Stage.THE_FINAL_CHARGE, maxProgress)
@@ -736,7 +768,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         )
         playerFleet.stats.accelerationMult.modifyMult(
             "BHSingingScreamsBurn",
-            (currSongStacks.toFloat() * 1.2f),
+            (currSongStacks.toFloat() * 1.2f).coerceAtLeast(1f),
             "Screaming Songs"
         )
     }

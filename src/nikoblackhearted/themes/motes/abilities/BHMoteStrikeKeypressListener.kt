@@ -57,30 +57,32 @@ class BHMoteStrikeKeypressListener: CampaignInputListener {
                 val engine = CampaignEngine.getInstance() ?: return
                 var target: SectorEntityToken? = engine.mousedOverEntity
 
-                if (target != null && plugin?.canTargetEntity(target) == true) {
-                    input.consume()
+                if (target != null) {
+                    if (plugin?.canTargetEntity(target) == true) {
+                        input.consume()
 
-                    if (plugin?.canFire() == true) {
-                        plugin?.currTarget = target as CampaignFleetAPI?
-                        plugin?.forceActivation()
-                        plugin?.currTarget = null
+                        if (plugin?.canFire() == true) {
+                            plugin?.currTarget = target as CampaignFleetAPI?
+                            plugin?.forceActivation()
+                            plugin?.currTarget = null
 
-                        /*Global.getSector().campaignUI.messageDisplay.addMessage(
+                            /*Global.getSector().campaignUI.messageDisplay.addMessage(
                             "Missile away!",
                             Misc.getNegativeHighlightColor()
                         )*/
-                    } else {
-                        Global.getSector().campaignUI.messageDisplay.addMessage(
-                            "Cannot launch mote",
-                            Misc.getNegativeHighlightColor()
-                        )
-                    }
+                        } else {
+                            Global.getSector().campaignUI.messageDisplay.addMessage(
+                                "Cannot launch mote",
+                                Misc.getNegativeHighlightColor()
+                            )
+                        }
 
-                    if (plugin?.canFire() != true) {
-                        deactivate(false)
+                        if (plugin?.canFire() != true) {
+                            deactivate(false)
+                        }
+                    } else {
+                        Global.getSoundPlayer().playUISound("ui_button_disabled_pressed", 1f, 1f)
                     }
-                } else {
-                    Global.getSoundPlayer().playUISound("ui_button_disabled_pressed", 1f, 1f)
                 }
 
                 return

@@ -1,3 +1,24 @@
+0.0.2
+SAVE COMPATIBLE - The rep bugfix will not apply for currently existing motes. They must be newly generated
+
+Fixes a bug with screaming songs making you slow as hell
+
+Starry shower doesnt make the annoying sound when you click something not a fleet
+
+Fixed market-created motes obliterating your rep
+
+Mote attractors now are affected by deficits
+New mote attractor unlock - endgame, starting at size 5, they start releasing roaming swarms of motes that will completely disable any fleet they hit
+
+Mote strike can now be deactivated by retriggering the ability
+
+Completely refactored mote movement
+    Better swarming
+
+Refactored how mote attractors apply their scripts
+    Less buggy, slightly more perf overhead
+Mote Attractors are now actual structures
+
 0.0.1
 SAVE COMPATIBLE
 

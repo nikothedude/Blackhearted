@@ -60,7 +60,8 @@ class BHMoteCircleScript(
             if (swarms.size < idealSwarms) {
                 val params = paramsOverride ?: MoteSwarmEntityPlugin.MoteSwarmParams(
                     1,
-                    spawnSound = "mote_attractor_launch_mote"
+                    spawnSound = "mote_attractor_launch_mote",
+                    source = entity
                 )
                 val swarm = entity.containingLocation.addCustomEntity(
                     null,

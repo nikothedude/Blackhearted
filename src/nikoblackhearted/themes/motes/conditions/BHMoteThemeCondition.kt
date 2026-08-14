@@ -10,6 +10,7 @@ import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.Mathutils.roundNumTo
 import nikoblackhearted.Mathutils.trimHangingZero
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
+import nikoblackhearted.themes.motes.industries.BHMoteAttractorInd
 import sound.int
 
 class BHMoteThemeCondition: BaseMarketConditionPlugin(), MarketImmigrationModifier {
@@ -61,7 +62,11 @@ class BHMoteThemeCondition: BaseMarketConditionPlugin(), MarketImmigrationModifi
     }
 
     fun isOnValidMarket() = market.faction.isPlayerFaction
-    fun isSuppresed() = market.industries.any { it.isFunctional && it.spec.hasTag("BHMoteUnrestSuppressor") }
+    fun isSuppresed(): Boolean {
+        val ind = market.industries.firstOrNull { it.spec.hasTag("BHMoteUnrestSuppressor") } as? BHMoteAttractorInd ?: return false
+        if (!ind.isFunctional) return false
+        return ind.canSuppress()
+    }
 
     override fun createTooltipAfterDescription(tooltip: TooltipMakerAPI?, expanded: Boolean) {
         super.createTooltipAfterDescription(tooltip, expanded)

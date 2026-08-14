@@ -11,8 +11,15 @@ class BHModPlugin : BaseModPlugin() {
        * It is most useful for loading data that only really needs to be setup once. */
     @Throws(Exception::class)
     override fun onApplicationLoad() {
+        LunaSettings.addSettingsListener(BHSettingsChangedListener())
         BHSettings.getLoadedMods()
         BHSettings.loadSettings()
+    }
+
+    class BHSettingsChangedListener: LunaSettingsListener {
+        override fun settingsChanged(modID: String) {
+            BHSettings.loadSettings()
+        }
     }
 
     /*This method is run in two cases:
@@ -21,15 +28,8 @@ class BHModPlugin : BaseModPlugin() {
     * This method is most useful for adding transient listeners/scripts and for enabling mid-save compatibility,
     * like adding star systems to an existing save if the mod was just added. */
     override fun onGameLoad(newGame: Boolean) {
-        LunaSettings.addSettingsListener(BHSettingsChangedListener())
         Global.getSector().listenerManager.addListener(BHTormentNexusInd.TormentNexusOptAdder(), true)
         BHPeople.createCharacters()
-    }
-
-    class BHSettingsChangedListener: LunaSettingsListener {
-        override fun settingsChanged(modID: String) {
-            BHSettings.loadSettings()
-        }
     }
 
     /*Runs when a save is created.

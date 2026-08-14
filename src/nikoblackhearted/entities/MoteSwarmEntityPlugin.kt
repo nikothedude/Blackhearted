@@ -12,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.entities.Mote.Companion.translateTowardsAngle
+import nikoblackhearted.themes.motes.industries.BHMoteSwarmRoamingAI.Companion.OUTER_BOUND
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
@@ -23,7 +24,6 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
 
     companion object {
         const val MIN_BUFFER = 100f
-        const val TURNAROUND_MAX_MULt = 1.45f
 
         const val GLOBAL_SPEED_MULT = 2f
     }
@@ -31,7 +31,8 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
     data class MoteSwarmParams(
         val numMotes: Int = 15,
         val baseColor: Color = Color(100,165,255,255),
-        val spawnSound: String? = null
+        val spawnSound: String? = null,
+        val source: SectorEntityToken? = null
     )
 
     var fadingOut = false
@@ -50,11 +51,14 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
         var facing: Float = MathUtils.getRandomNumberInRange(0f, 360f)
         var target: SectorEntityToken? = null
 
+        lateinit var maneuverTarget: Vector2f
+
         init {
             location = MathUtils.getRandomPointInCircle(
                 Misc.ZERO,
                 swarm.entity.radius - MIN_BUFFER
             )
+            retarget()
         }
 
         val collisionInterval = IntervalUtil(0.1f, 0.11f)
@@ -133,20 +137,22 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
                 )
             }
 
-            if (fleet.knowsWhoPlayerIs() && !fleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) {
-                val impact = CoreReputationPlugin.CustomRepImpact()
-                impact.delta = -0.01f
-                impact.ensureAtWorst = RepLevel.HOSTILE
+            if (swarm.params.source?.isPlayerFleet == true) {
+                if (fleet.knowsWhoPlayerIs() && !fleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) {
+                    val impact = CoreReputationPlugin.CustomRepImpact()
+                    impact.delta = -0.01f
+                    impact.ensureAtWorst = RepLevel.HOSTILE
 
-                val action = CoreReputationPlugin.RepActionEnvelope(
-                    CoreReputationPlugin.RepActions.CUSTOM, impact,
-                    null, false
-                )
-                action.reason = "Change caused by esoteric particle impact"
-                Global.getSector().adjustPlayerReputation(
-                    action,
-                    fleet.faction.id
-                )
+                    val action = CoreReputationPlugin.RepActionEnvelope(
+                        CoreReputationPlugin.RepActions.CUSTOM, impact,
+                        null, false
+                    )
+                    action.reason = "Change caused by esoteric particle impact"
+                    Global.getSector().adjustPlayerReputation(
+                        action,
+                        fleet.faction.id
+                    )
+                }
             }
 
             delete()
@@ -156,7 +162,32 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
             swarm.removeMote(this)
         }
 
+        var retargetInterval = IntervalUtil(0.03f, 0.04f)
+
+        private fun retarget() {
+            val newLoc = MathUtils.getRandomPointInCircle(
+                swarm.entity.location,
+                swarm.entity.radius,
+            )
+
+            maneuverTarget = newLoc
+        }
+
         override fun doMovement(amount: Float) {
+
+            if (retargetInterval == null) retargetInterval = IntervalUtil(0.03f, 0.04f)
+
+            // TODO remove, for save compat 8/12/2026
+            if (!this::maneuverTarget.isInitialized) {
+                retarget()
+            }
+
+            val days = Misc.getDays(amount)
+            retargetInterval.advance(days)
+            if (retargetInterval.intervalElapsed()) {
+                retarget()
+            }
+
             var inRangeTarget: SectorEntityToken? = null
             if (target != null) {
                 val dist = MathUtils.getDistance(swarm.entity, target)
@@ -165,43 +196,30 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
                 }
             }
 
-            var incr = if (inRangeTarget != null) 0f else (turnRate) * sign(MathUtils.getRandom().nextFloat() - 0.5f)
-            incr *= MathUtils.getRandomNumberInRange(0.7f, 1.3f)
-
             val spatial = getSpatialLocation()
 
-            val dist = MathUtils.getDistance(
-                spatial,
-                swarm.entity.location
-            )
-            //val externalDist = (dist - swarm.entity.radius).coerceAtLeast(0f)
-            val distFromRadius = (swarm.entity.radius - dist)
-
-            val bufferMult = ((distFromRadius) / MIN_BUFFER).coerceAtMost(1f).coerceAtLeast(0f)
-            if (bufferMult < 1f || inRangeTarget != null) {
-                var targetSign: Int
-                val baseTurn = if (inRangeTarget == null) ((turnRate * TURNAROUND_MAX_MULt) * (1 - bufferMult)) else turnRate
-                val maneuverTarget = if (inRangeTarget != null) VectorUtils.getAngle(spatial, inRangeTarget!!.location) else VectorUtils.getAngle(spatial, swarm.entity.location)
-                if (facing > 180) {
-                    val inverted = facing - 180f // dont normalize this.
-                    val targetIsLeft = !(maneuverTarget < facing && maneuverTarget > inverted)
-                    targetSign = (if (targetIsLeft) 1 else -1)
-                } else {
-                    val inverted = facing + 180f
-                    val targetIsLeft = maneuverTarget > facing && maneuverTarget < inverted
-                    targetSign = (if (targetIsLeft) 1 else -1)
-                }
-                val forceTurn = baseTurn * targetSign
-                incr += forceTurn
+            var targetSign: Int
+            val maneuverAngle = if (inRangeTarget != null) VectorUtils.getAngle(spatial, inRangeTarget.location) else VectorUtils.getAngle(spatial, maneuverTarget)
+            if (facing > 180) {
+                val inverted = facing - 180f // dont normalize this.
+                val targetIsLeft = !(maneuverAngle < facing && maneuverAngle > inverted)
+                targetSign = (if (targetIsLeft) 1 else -1)
+            } else {
+                val inverted = facing + 180f
+                val targetIsLeft = maneuverAngle > facing && maneuverAngle < inverted
+                targetSign = (if (targetIsLeft) 1 else -1)
             }
-
-            facing = (Misc.normalizeAngle(facing + (incr * amount)))
-
+            val forceTurn = turnRate * targetSign
+            var speedMult = 1f
+            if (inRangeTarget != null) {
+                val distTwo = MathUtils.getDistance(swarm.entity.location, target!!.location)
+                if (distTwo <= 0.3f) speedMult = 3f
+            }
+            facing = (Misc.normalizeAngle(facing + (forceTurn * amount * speedMult)))
             location.translateTowardsAngle(
                 facing,
-                speed * amount
+                speed * amount * speedMult
             )
-
         }
 
         override fun getSpatialLocation(): Vector2f = Vector2f(location).translate(swarm.entity.location.x, swarm.entity.location.y)
@@ -255,7 +273,7 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
             didSound = true
         }
 
-        for (mote in motes) {
+        for (mote in motes.toList()) {
             mote.advance(amount)
         }
 
@@ -269,11 +287,15 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
 
             val angle = VectorUtils.getAngle(entity.location, target!!.location)
             entity.facing = angle
-            val newLoc = Vector2f(entity.location).translateTowardsAngle(
-                angle,
-                300f * amount
-            )
-            entity.setLocation(newLoc.x, newLoc.y)
+            if (target != null && MathUtils.getDistance(entity.location, target!!.location) <= 1f) {
+                entity.setLocation(target!!.location.x, target!!.location.y)
+            } else {
+                val newLoc = Vector2f(entity.location).translateTowardsAngle(
+                    angle,
+                    300f * amount
+                )
+                entity.setLocation(newLoc.x, newLoc.y)
+            }
         }
 
         if (fadeTime > 0f) {

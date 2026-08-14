@@ -10,15 +10,23 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.BHDelayedExecution
+import nikoblackhearted.entities.MoteSwarmEntityPlugin
 import nikoblackhearted.themes.motes.BHMoteCircleScript
+import nikoblackhearted.themes.motes.BHMoteThemeIntel
+import org.lazywizard.lazylib.MathUtils
 
 open class BHMoteAttractorInd: BaseIndustry() {
 
     companion object {
         const val GROUND_DEFENSE_MULT = 1.1f
+        const val MIN_SWARM_SIZE = 5
+        const val SWARMS_PER_SIZE = 1
+
+        const val BASE_DAYS_BETWEEN_SWARMS = 23f
     }
 
     lateinit var script: BHMoteCircleScript
+    var roamingMotes = HashSet<MoteSwarmEntityPlugin>()
     var madeScript = false
 
     override fun apply() {
@@ -31,8 +39,7 @@ open class BHMoteAttractorInd: BaseIndustry() {
         demand(Commodities.VOLATILES, size)
         demand(Commodities.SUPPLIES, size)
 
-        if (!isFunctional) {
-            script.stop()
+        if (currTooltipMode == Industry.IndustryTooltipMode.ADD_INDUSTRY) {
             return
         }
 
@@ -41,21 +48,33 @@ open class BHMoteAttractorInd: BaseIndustry() {
                 market.primaryEntity,
                 100f,
                 1,
-                respawnDelayMult = 0.4f
+                respawnDelayMult = 0.2f
             )
-            script.start()
             madeScript = true
         }
+
         script.maxMotes = getMaxMotes()
 
+        val deficit = getOurDeficits()
+        val extra = if (deficit < 1) "shortages" else ""
+        val mult = 1f + ((GROUND_DEFENSE_MULT - 1f) * (deficit))
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(
             id,
-            GROUND_DEFENSE_MULT,
-            nameForModifier
+            mult,
+            "$nameForModifier$extra"
         )
     }
 
-    private fun getMaxMotes(): Int = (((market.primaryEntity.radius * 0.035f) * market.size - 2).toInt())
+    fun getOurDeficits() = getDeficitMult(
+        Commodities.FUEL,
+        Commodities.VOLATILES,
+        Commodities.SUPPLIES,
+        Commodities.RARE_METALS
+    )
+
+    fun canSuppress() = getOurDeficits() >= 0.5f
+
+    private fun getMaxMotes(): Int = if (isFunctional) (((market.primaryEntity.radius * 0.035f) * market.size - 2).toInt()) else 0
 
     override fun unapply() {
         super.unapply()
@@ -67,7 +86,12 @@ open class BHMoteAttractorInd: BaseIndustry() {
         ) {
             override fun executeImpl() {
                 if (!market.hasIndustry(spec.id)) {
-                    script.delete()
+                    if (madeScript) {
+                        script.delete()
+                    }
+
+                    roamingMotes.forEach { it.delete() }
+                    roamingMotes.clear()
                 }
             }
         }
@@ -75,6 +99,61 @@ open class BHMoteAttractorInd: BaseIndustry() {
         DelayedExecution().start()
 
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(id)
+    }
+
+    val swarmSpawnInterval = IntervalUtil(BASE_DAYS_BETWEEN_SWARMS, BASE_DAYS_BETWEEN_SWARMS + 0.1f)
+    override fun advance(amount: Float) {
+        super.advance(amount)
+        if (madeScript) {
+            if (!isFunctional) {
+                script.stop()
+                return
+            } else {
+                script.start()
+            }
+        }
+        val intel = BHMoteThemeIntel.get() ?: return
+        if (!intel.roamingMotesActive) return
+        if (roamingMotes == null) roamingMotes = HashSet()
+        roamingMotes.removeAll { it.motes.isEmpty() }
+
+        if (roamingMotes.size < getMaxSwarms()) {
+            swarmSpawnInterval.advance(Misc.getDays(amount))
+            if (swarmSpawnInterval.intervalElapsed()) {
+                spawnSwarm()
+            }
+        }
+    }
+
+    private fun spawnSwarm() {
+        val params = MoteSwarmEntityPlugin.MoteSwarmParams(
+            20,
+            spawnSound = "mote_attractor_launch_mote",
+            source = market.primaryEntity
+        )
+        val swarm = market.primaryEntity.containingLocation.addCustomEntity(
+            null,
+            null,
+            "BH_moteSwarm",
+            market.faction.id,
+            100f,
+            0f,
+            0f,
+            params
+        )
+        val randSpawnLoc = MathUtils.getRandomPointInCircle(
+            market.primaryEntity.location,
+            market.primaryEntity.radius
+        )
+        swarm.setLocation(randSpawnLoc.x, randSpawnLoc.y)
+        val plugin = swarm.customPlugin as MoteSwarmEntityPlugin
+        BHMoteSwarmRoamingAI(plugin, market.primaryEntity).start()
+        roamingMotes += plugin
+    }
+
+    fun getMaxSwarms(): Int {
+        val bonus = (market.size + 1) - MIN_SWARM_SIZE
+        return (bonus * SWARMS_PER_SIZE)
     }
 
     override fun hasPostDemandSection(hasDemand: Boolean, mode: Industry.IndustryTooltipMode?): Boolean {
@@ -103,6 +182,22 @@ open class BHMoteAttractorInd: BaseIndustry() {
             Misc.getNegativeHighlightColor(),
             "Unnerved"
         )
+        if (!canSuppress()) {
+            tooltip.addPara(
+                "Shortages, however, are allowing unrest and dissent to run rampant.",
+                10f
+            ).color = Misc.getNegativeHighlightColor()
+        }
+
+        val intel = BHMoteThemeIntel.get() ?: return
+        if (intel.roamingMotesActive) {
+            tooltip.addPara(
+                "Additionally, starting at %s, spawns %s that will %s and %s enemy fleets.",
+                10f,
+                Misc.getHighlightColor(),
+                "size $MIN_SWARM_SIZE", "roaming swarms", "hunt", "disable"
+            )
+        }
 
         addGroundDefensesImpactSection(tooltip, GROUND_DEFENSE_MULT - 1f)
     }

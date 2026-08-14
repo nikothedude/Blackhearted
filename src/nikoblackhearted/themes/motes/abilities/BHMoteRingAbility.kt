@@ -49,7 +49,7 @@ class BHMoteRingAbility: BaseToggleAbility() {
                 "mote_attractor_loop",
                 fleet,
                 1f,
-                (0.5f * level),
+                (0.5f * getVolumeMult() * level),
                 fleet.location,
                 Misc.ZERO
             )
@@ -62,6 +62,10 @@ class BHMoteRingAbility: BaseToggleAbility() {
         )
 
         return
+    }
+
+    fun getVolumeMult(): Float {
+        return (script.getMaxSwarms().toFloat() / script.maxMotes!!.toFloat())
     }
 
     override fun deactivateImpl() {
