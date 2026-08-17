@@ -14,6 +14,7 @@ import nikoblackhearted.entities.MoteSwarmEntityPlugin
 import nikoblackhearted.themes.motes.BHMoteCircleScript
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
 import org.lazywizard.lazylib.MathUtils
+import org.magiclib.kotlin.getMaxIndustries
 
 open class BHMoteAttractorInd: BaseIndustry() {
 
@@ -113,8 +114,8 @@ open class BHMoteAttractorInd: BaseIndustry() {
             }
         }
         val intel = BHMoteThemeIntel.get() ?: return
-        if (!intel.roamingMotesActive) return
         if (roamingMotes == null) roamingMotes = HashSet()
+        if (!intel.roamingMotesActive) return
         roamingMotes.removeAll { it.motes.isEmpty() }
 
         if (roamingMotes.size < getMaxSwarms()) {
@@ -215,4 +216,10 @@ open class BHMoteAttractorInd: BaseIndustry() {
     override fun isFunctional(): Boolean {
         return super.isFunctional() && market.faction.id == Factions.PLAYER
     }
+
+    override fun canUpgrade(): Boolean {
+        return super.canUpgrade() && market.getIndustrySlots() >= 1
+    }
+
+    fun MarketAPI.getIndustrySlots(): Int = getMaxIndustries() - industries.count { it.isIndustry }
 }

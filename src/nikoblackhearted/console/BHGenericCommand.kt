@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.entities.MoteSwarmEntityPlugin
 import nikoblackhearted.themes.motes.BHMoteCircleScript
+import nikoblackhearted.themes.motes.BHMoteThemeIntel
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
@@ -31,15 +32,7 @@ class BHGenericCommand: BaseCommand {
 
         //val entity = Global.getSector().economy.getMarket("jangala").primaryEntity
 
-        BHMoteCircleScript(
-            Global.getSector().playerFleet,
-            200f,
-            6,
-            7f,
-            MoteSwarmEntityPlugin.MoteSwarmParams(1),
-            5f,
-            5f
-        ).start()
+        BHMoteThemeIntel.get()?.adjustSongStacks(1)
 
         return BaseCommand.CommandResult.SUCCESS
     }

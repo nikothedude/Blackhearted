@@ -768,7 +768,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         )
         playerFleet.stats.accelerationMult.modifyMult(
             "BHSingingScreamsBurn",
-            (currSongStacks.toFloat() * 1.2f).coerceAtLeast(1f),
+            (1f + (currSongStacks.toFloat() * 1.2f)).coerceAtLeast(1f),
             "Screaming Songs"
         )
     }
