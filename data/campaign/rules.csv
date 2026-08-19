@@ -176,8 +176,8 @@ How did he-
 
 ""Ludd preserves, you WRETCH!"" he snarls, shooting forward. A smile curls through his lips. ""You are not the ONLY one with friends from beyond. FOR I! HAVE! LUDD!!""","BHMoteCrusaderHailTwoLaugh:Laugh
 BHMoteCrusaderHailTwoHelp:""Please... HELP me-""
-BHMoteCrusaderHailTwoHow:""How did you survive? I KILLED you!"" (UNFINISHED)
-BHMoteCrusaderHailTwoWho:""Who even ARE you?!"" (UNFINISHED)",
+BHMoteCrusaderHailTwoHow:""How did you survive? I KILLED you!""
+BHMoteCrusaderHailTwoWho:""Who even ARE you?!""",
 BHMoteCrusaderHailTwoLaugh,DialogOptionSelected,"$option == BHMoteCrusaderHailTwoLaugh","ShowDefaultVisual
 EndConversation","Oh, fun, how fun! Another chance to dance! You grin and smile and laugh and he laughs with you oh joyous - 
 
@@ -188,6 +188,8 @@ EndConversation","-SPLITTINGEEDLESANDAGONYANDANDTHEPAINNNNNNN-YOURHEAD-YOUR---
 ""I will help you, yes. With the power of Ludd. Your misery shalt end.""
 
 And with that, the commlink dies, leaving you reeling and crying and sobbing-",,
+BHMoteCrusaderHailTwoHow,DialogOptionSelected,"$option == BHMoteCrusaderHailTwoHow","SetEnabled BHMoteCrusaderHailTwoHow false","His smile grows more grotesque as he gestures to the void-sky of his rickety office. ""My work was not yet done."" he lunges forward-spit snarling from his lips-""Not as long as you stand, I will fall, DEMON.""",,
+BHMoteCrusaderHailTwoWho,DialogOptionSelected,"$option == BHMoteCrusaderHailTwoWho","SetEnabled BHMoteCrusaderHailTwoWho false","He scoffs. ""$PersonName, crusader of the ninth order and your final destination. Ludd watches over me, and curses you. Prepare for your final damnation.""",,
 "#END The second crusade",,,,,,
 ,,,,,,
 # The third crusade,,,,,,
@@ -258,7 +260,7 @@ Ready, alone, and together. All must sing with you.
 For that is art. And that is love. And from togetherness...
 
 We will be whole.","BHMoteFinalRewardEight:Continue",
-BHMoteFinalRewardEight,DialogOptionSelected,"$option == BHMoteFinalRewardEight","AddTextSmall ""Screaming Song stacks increased, decay rate reduced"" good
+BHMoteFinalRewardEight,DialogOptionSelected,"$option == BHMoteFinalRewardEight","AddTextSmall ""Screaming Song stack cap increased, decay rate reduced"" good
 AddTextSmall ""All your ships now have motes in-combat"" good
 AddTextSmall ""Gained 1 skill point"" good",,"BHMoteFinalRewardNine:...",
 BHMoteFinalRewardNine,DialogOptionSelected,"$option == BHMoteFinalRewardNine","BHMusicToggle ""BH_music_scavenge_ambience"" true","...you are back on your bridge. You feel... stronger, somehow. That foreign presence... is gone. And the familiar one...

@@ -46,7 +46,6 @@ class BHMoteRingPlugin(val intel: BHMoteThemeIntel, val engine: CombatEngineAPI)
         val flagship = engine.playerShip
         if (intel.fleetwideCombatMotes) {
             for (ship in engine.ships.filter { it.isSuitableMoteRingTargetFirstStep() }) {
-
                 addRing(ship)
             }
         } else {

@@ -30,7 +30,7 @@ class BH_backgroundPlugin: BaseCharacterBackground() {
 
         if (expanded) {
             tooltip.addPara(
-                "Begin an %s. Multiple themes are available, and can be picked up until a day has passed by entering the blackhearted event intel.\n" +
+                "Begin an %s. Multiple themes are available, and can be picked by entering the blackhearted event intel.\n" +
                 "\n" +
                 "Gain points by %s, %s, or other %s - determined by the theme you pick. Gain various bonuses and maluses, such as reduced max reputation with all factions in exchange for faster fleet movement.\n" +
                 "\n" +

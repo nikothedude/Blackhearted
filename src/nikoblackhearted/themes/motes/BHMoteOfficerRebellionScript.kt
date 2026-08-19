@@ -23,6 +23,6 @@ class BHMoteOfficerRebellionScript: BHBaseNikoScript() {
             Global.getSector().playerFleet
         )
         Global.getSector().memoryWithoutUpdate["\$BHMoteDidOfficerRebellion"] = true
-        Global.getSector().removeScript(this)
+        delete()
     }
 }
