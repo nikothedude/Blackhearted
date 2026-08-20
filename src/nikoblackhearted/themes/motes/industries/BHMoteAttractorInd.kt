@@ -1,15 +1,20 @@
 package nikoblackhearted.themes.motes.industries
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry
+import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.impl.campaign.ids.Strings
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.BHDelayedExecution
+import nikoblackhearted.Mathutils.roundNumTo
+import nikoblackhearted.Mathutils.trimHangingZero
 import nikoblackhearted.entities.MoteSwarmEntityPlugin
 import nikoblackhearted.themes.motes.BHMoteCircleScript
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
@@ -24,6 +29,8 @@ open class BHMoteAttractorInd: BaseIndustry() {
         const val SWARMS_PER_SIZE = 1
 
         const val BASE_DAYS_BETWEEN_SWARMS = 23f
+
+        const val ALPHA_RESPAWN_MULT = 1.25f
     }
 
     lateinit var script: BHMoteCircleScript
@@ -48,13 +55,17 @@ open class BHMoteAttractorInd: BaseIndustry() {
             script = BHMoteCircleScript(
                 market.primaryEntity,
                 100f,
-                1,
-                respawnDelayMult = 0.2f
+                1
             )
             madeScript = true
         }
 
         script.maxMotes = getMaxMotes()
+        if (aiCoreId == Commodities.ALPHA_CORE) {
+            script.respawnDelayMult = (1f * ALPHA_RESPAWN_MULT)
+        } else {
+            script.respawnDelayMult = 1f
+        }
 
         val deficit = getOurDeficits()
         val extra = if (deficit < 1) "shortages" else ""
@@ -219,6 +230,36 @@ open class BHMoteAttractorInd: BaseIndustry() {
 
     override fun canUpgrade(): Boolean {
         return super.canUpgrade() && market.getIndustrySlots() >= 1
+    }
+
+    override fun addAlphaCoreDescription(tooltip: TooltipMakerAPI, mode: Industry.AICoreDescriptionMode?) {
+        val opad = 10f
+        val highlight = Misc.getHighlightColor()
+
+        var pre = "Alpha-level AI core currently assigned. "
+        if (mode == Industry.AICoreDescriptionMode.MANAGE_CORE_DIALOG_LIST || mode == Industry.AICoreDescriptionMode.INDUSTRY_TOOLTIP) {
+            pre = "Alpha-level AI core. "
+        }
+
+        if (mode == Industry.AICoreDescriptionMode.INDUSTRY_TOOLTIP) {
+            val coreSpec = Global.getSettings().getCommoditySpec(aiCoreId)
+            val text = tooltip.beginImageWithText(coreSpec.getIconName(), 48f)
+            text.addPara(
+                pre + "Reduces upkeep cost by %s. Reduces demand by %s unit. " +
+                        "Increases mote respawn rate by %s.", 0f, highlight,
+                "" + ((1f - UPKEEP_MULT) * 100f).toInt() + "%", "" + DEMAND_REDUCTION,
+                "${ALPHA_RESPAWN_MULT.roundNumTo(3).trimHangingZero()}x"
+            )
+            tooltip.addImageWithText(opad)
+            return
+        }
+
+        tooltip.addPara(
+            pre + "Reduces upkeep cost by %s. Reduces demand by %s unit. " +
+                    "Increases mote respawn rate by %s.", opad, highlight,
+            "" + ((1f - UPKEEP_MULT) * 100f).toInt() + "%", "" + DEMAND_REDUCTION,
+            "${ALPHA_RESPAWN_MULT.roundNumTo(3).trimHangingZero()}x"
+        )
     }
 
     fun MarketAPI.getIndustrySlots(): Int = getMaxIndustries() - industries.count { it.isIndustry }

@@ -29,7 +29,9 @@ import org.magiclib.kotlin.getMarketSizeProgress
 class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
 
     companion object {
-        const val DECREMENT_TO_PER_DAY_PROGRESS = 0.3f
+        const val DECREMENT_TO_PER_DAY_PROGRESS = 0.15f
+        const val DEFAULT_MAX_MALUS = 50f
+        const val BONUS_MALUS = 50f
     }
 
     var currentDecrement = 0f
@@ -61,7 +63,7 @@ class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
             "Current population growth malus: %s. Current stack generation per day: %s.",
             10f,
             Misc.getHighlightColor(),
-            "${currentDecrement.toInt()}", "${getStackGen(currentDecrement, 1f)}"
+            "${currentDecrement.roundNumTo(1).trimHangingZero()}", "${getStackGen(currentDecrement, 1f).roundNumTo(3).trimHangingZero()}"
         ).setHighlightColors(
             Misc.getNegativeHighlightColor(),
             Misc.getPositiveHighlightColor()
@@ -127,7 +129,6 @@ class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
         val pop = market.population
         val inc = market.incoming
         val min: Float = plugin.getWeightForMarketSize(market.size.toFloat())
-        val max: Float = plugin.getWeightForMarketSize((market.size + 1).toFloat())
         val newWeight: Float = pop.weightValue + inc.weightValue
 
         if (newWeight < min) {
@@ -171,6 +172,19 @@ class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
             this.spec.id,
             -currentDecrement,
             "$nameForModifier"
+        )
+    }
+
+    override fun canImprove(): Boolean {
+        return true
+    }
+
+    override fun addImproveDesc(info: TooltipMakerAPI?, mode: Industry.ImprovementDescriptionMode?) {
+        info?.addPara(
+            "Expands the maximum sacrifice rate to %s.",
+            0f,
+            Misc.getHighlightColor(),
+            "${DEFAULT_MAX_MALUS.toInt() + BONUS_MALUS.toInt()}"
         )
     }
 
@@ -293,10 +307,12 @@ class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
                 WIDTH,
                 HEIGHT, true)
 
+            var malus = DEFAULT_MAX_MALUS
+            if (ind.isImproved) malus += BONUS_MALUS
             val slider = LunaUITextFieldWithSlider(
                 ind.currentDecrement.toInt(),
                 0f,
-                50f,
+                malus,
                 WIDTH * 0.8f,
                 HEIGHT * 0.6f,
                 "BH_TormentNexusSlider", "BH_TormentNexusSlider", panel!!, panelTooltip
@@ -312,7 +328,7 @@ class BHTormentNexusInd: BHMoteAttractorInd(), MarketImmigrationModifier {
                 "Current pop growth malus: %s. Current Stack generation per day: %s",
                 10f,
                 Misc.getNegativeHighlightColor(),
-                "${ind.currentDecrement.roundNumTo(1).trimHangingZero()}", "${ind.getStackGen(ind.currentDecrement, 1f).roundNumTo(1).trimHangingZero()}"
+                "${ind.currentDecrement.roundNumTo(1).trimHangingZero()}", "${ind.getStackGen(ind.currentDecrement, 1f).roundNumTo(3).trimHangingZero()}"
             ).setHighlightColors(
                 Misc.getNegativeHighlightColor(),
                 Misc.getPositiveHighlightColor()

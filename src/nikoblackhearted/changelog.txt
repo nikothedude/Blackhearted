@@ -11,6 +11,7 @@ Mote attractors now are affected by deficits
 New mote attractor unlock - endgame, starting at size 5, they start releasing roaming swarms of motes that will completely disable any fleet they hit
 
 Mote strike can now be deactivated by retriggering the ability
+Mote strike in combat can now be, if badly, used by AI
 
 Completely refactored mote movement
     Better swarming
@@ -18,6 +19,11 @@ Completely refactored mote movement
 Refactored how mote attractors apply their scripts
     Less buggy, slightly more perf overhead
 Mote Attractors are now actual structures
+
+Mote attractors now have alpha core integration
+Mote attractors now respawn motes rather fast
+Ballet houses can now be improved
+Ballet house scaling reduced
 
 0.0.1
 SAVE COMPATIBLE

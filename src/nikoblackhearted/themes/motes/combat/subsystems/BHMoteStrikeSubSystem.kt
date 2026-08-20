@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.EmpArcEntityAPI.EmpArcParams
 import com.fs.starfarer.api.impl.combat.MoteControlScript
 import com.fs.starfarer.api.impl.combat.MoteControlScript.getSharedData
 import com.fs.starfarer.api.input.InputEventAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.themes.motes.combat.BHMoteRingPlugin.BHMoteRingPerShipPlugin
 import org.lwjgl.util.vector.Vector2f
@@ -21,8 +22,13 @@ class BHMoteStrikeSubSystem(ship: ShipAPI): MagicSubsystem(ship) {
         return 0.2f
     }
 
+    val interval = IntervalUtil(1f, 3.1f)
+
     override fun shouldActivateAI(amount: Float): Boolean {
-        return false
+        if (ship != Global.getCombatEngine().playerShip) return false
+        interval.advance(amount)
+        if (!interval.intervalElapsed()) return false
+        return getLockTarget(ship.mouseTarget) != null
     }
 
     override fun onActivate() {
