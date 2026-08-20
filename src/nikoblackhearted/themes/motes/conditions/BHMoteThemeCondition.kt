@@ -63,8 +63,7 @@ class BHMoteThemeCondition: BaseMarketConditionPlugin(), MarketImmigrationModifi
 
     fun isOnValidMarket() = market.faction.isPlayerFaction
     fun isSuppresed(): Boolean {
-        val ind = market.industries.firstOrNull { it.spec.hasTag("BHMoteUnrestSuppressor") } as? BHMoteAttractorInd ?: return false
-        if (!ind.isFunctional) return false
+        val ind = market.industries.firstOrNull { it.isFunctional && it.spec.hasTag("BHMoteUnrestSuppressor") } as? BHMoteAttractorInd ?: return false
         return ind.canSuppress()
     }
 

@@ -29,6 +29,7 @@ class BHModPlugin : BaseModPlugin() {
     * like adding star systems to an existing save if the mod was just added. */
     override fun onGameLoad(newGame: Boolean) {
         Global.getSector().listenerManager.addListener(BHTormentNexusInd.TormentNexusOptAdder(), true)
+        Global.getSector().addTransientListener(BHRepListener())
         BHPeople.createCharacters()
     }
 

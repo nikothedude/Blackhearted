@@ -766,9 +766,10 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
             currSongStacks.toFloat(),
             "Screaming Songs"
         )
-        playerFleet.stats.accelerationMult.modifyMult(
+        playerFleet.stats.accelerationMult.unmodify("BHSingingScreamsBurn")
+        playerFleet.stats.accelerationMult.modifyFlat(
             "BHSingingScreamsBurn",
-            (1f + (currSongStacks.toFloat() * 1.2f)).coerceAtLeast(1f),
+            (currSongStacks.toFloat() * 1.2f),
             "Screaming Songs"
         )
     }
@@ -837,7 +838,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
     override fun afterStageDescriptionImpl(main: TooltipMakerAPI) {
         super.afterStageDescriptionImpl(main)
 
-        val rel = -getGlobalRepMaxMod(progressFraction)
+        val rel = (1f - getGlobalRepMax(progressFraction)) * 0.5f
         main.addPara(
             "As you commit atrocities, most human factions will grow to resent you, and have their %s reduced. Currently reduced by %s.",
             10f,
@@ -921,8 +922,8 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         return base * mult
     }
 
-    fun getGlobalRepMaxMod(progress: Float = progressFraction): Float {
-        return -(progress / VENGEFUL_AT_PROGRESS_PERCENT) * ((VENGEFUL_AT_PROGRESS_PERCENT))
+    fun getGlobalRepMax(progress: Float = progressFraction): Float {
+        return (1f - (progress * 2f))
     }
 
     fun getPlayerMaxMotes(): Int {
@@ -949,7 +950,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
 
     fun handleNewRep(progressFraction: Float) {
         BHRepHandler.adjustRepMalus(
-            getGlobalRepMaxMod(progressFraction),
+            getGlobalRepMax(progressFraction),
             getHatedFactions()
         )
     }
@@ -987,6 +988,7 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         var outcastFpDestroyed = 0f
         var warFpDestroyed = 0f
         for (otherFleet in battle.nonPlayerSideSnapshot) {
+            if (!otherFleet.faction.isShowInIntelTab) continue
             if (otherFleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_LOW_REP_IMPACT) || otherFleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) return
             val isCiv = otherFleet.isCivilian()
             val isOutcast = otherFleet.isOutcast()

@@ -5,6 +5,8 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import exerelin.campaign.DiplomacyManager
 import exerelin.campaign.ExerelinReputationAdjustmentResult
 import exerelin.utilities.NexUtils
+import nikoblackhearted.BHRepListener.Companion.sanitizeRel
+import nikoblackhearted.BHRepListener.Companion.setMaxRep
 
 object BHRepHandler {
 
@@ -12,9 +14,8 @@ object BHRepHandler {
 
     fun adjustRepMalus(amount: Float, factions: List<FactionAPI>) {
         for (fac in factions) {
-            // TODO - do this in a way that doesnt use nex
-            val mod = DiplomacyManager.getManager().getMaxRelationshipStat(fac.id, Factions.PLAYER)
-            mod.modifyFlat(REP_MOD_ID, amount)
+            fac.setMaxRep(amount)
+            fac.sanitizeRel()
         }
     }
 }

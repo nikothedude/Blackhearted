@@ -68,7 +68,6 @@ abstract class BHThemeMainIntel: BHThemeIntel(), FleetEventListener, ColonyPlaye
 
     }
 
-
     class BHMainThemeAgentListener(val BHIntel: BHThemeMainIntel): AgentActionListener {
         override fun reportAgentAction(intel: CovertActionIntel?) {
             if (intel == null) return
