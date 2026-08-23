@@ -138,20 +138,21 @@ class MoteSwarmEntityPlugin(): BaseCustomEntityPlugin() {
             }
 
             if (swarm.params.source?.isPlayerFleet == true) {
-                if (fleet.knowsWhoPlayerIs() && !fleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) {
-                    val impact = CoreReputationPlugin.CustomRepImpact()
-                    impact.delta = -0.01f
-                    impact.ensureAtWorst = RepLevel.HOSTILE
+                if (fleet.faction.relToPlayer.isAtWorst(RepLevel.HOSTILE)) {
+                    if (fleet.knowsWhoPlayerIs() && !fleet.memoryWithoutUpdate.getBoolean(MemFlags.MEMORY_KEY_NO_REP_IMPACT)) {
+                        val impact = CoreReputationPlugin.CustomRepImpact()
+                        impact.delta = -0.01f
 
-                    val action = CoreReputationPlugin.RepActionEnvelope(
-                        CoreReputationPlugin.RepActions.CUSTOM, impact,
-                        null, false
-                    )
-                    action.reason = "Change caused by esoteric particle impact"
-                    Global.getSector().adjustPlayerReputation(
-                        action,
-                        fleet.faction.id
-                    )
+                        val action = CoreReputationPlugin.RepActionEnvelope(
+                            CoreReputationPlugin.RepActions.CUSTOM, impact,
+                            null, false
+                        )
+                        action.reason = "Change caused by esoteric particle impact"
+                        Global.getSector().adjustPlayerReputation(
+                            action,
+                            fleet.faction.id
+                        )
+                    }
                 }
             }
 
