@@ -12,10 +12,12 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.missions.hub.MissionTrigger
+import com.fs.starfarer.api.util.IntervalUtil
 import exerelin.campaign.fleets.InvasionFleetManager
 import exerelin.campaign.intel.rebellion.RebellionCreator
 import exerelin.campaign.intel.rebellion.RebellionIntel
 import nikoblackhearted.BHBaseNikoScript
+import nikoblackhearted.BHDelayedExecution
 import nikoblackhearted.BHPeople
 import nikoblackhearted.BHSettings
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
@@ -99,6 +101,12 @@ object BHMoteCrusadeManager {
         abstract fun getExtraTargets(): Int
         abstract fun getInvasionFPMult(): Float
         open fun onFleetCreated(fleet: CampaignFleetAPI) {
+            class DelayedExecution(): BHDelayedExecution(IntervalUtil(90f, 90f)) {
+                override fun executeImpl() {
+                    Global.getSector().memoryWithoutUpdate[memFlag] = true
+                }
+            }
+            DelayedExecution().start()
             fleet.addEventListener(CrusadeMainFleetDeathListener(this))
         }
         abstract fun getFlagshipVariant(): String
