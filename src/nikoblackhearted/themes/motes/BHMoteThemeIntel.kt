@@ -5,6 +5,9 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.econ.MonthlyReport
+import com.fs.starfarer.api.campaign.listeners.EconomyTickListener
+import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
@@ -14,6 +17,7 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseOneTimeFactor
 import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
+import com.fs.starfarer.api.impl.campaign.shared.SharedData
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
@@ -968,9 +972,45 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         }
     }
 
-    private fun handleOfficerRebellion() {
+    fun handleOfficerRebellion() {
         BHMoteOfficerRebellionScript().start()
+        Global.getSector().listenerManager.addListener(
+            BHMoteCrewWageListenter()
+        )
         Global.getSector().memoryWithoutUpdate.set("\$BHMoteDidOfficerRebellion", true)
+    }
+
+    class BHMoteCrewWageListenter: EconomyTickListener {
+        override fun reportEconomyTick(iterIndex: Int) {
+            val lastIterInMonth = Global.getSettings().getFloat("economyIterPerMonth").toInt() - 1
+            if (iterIndex != lastIterInMonth) { // only run once on last economy tick in the month
+                return
+            }
+            val playerFleet = Global.getSector().playerFleet ?: return
+            val report = SharedData.getData().getCurrentReport();
+            val fleetNode: MonthlyReport.FDNode = report.getNode(MonthlyReport.FLEET)
+            val crewNode = report.getNode(fleetNode, MonthlyReport.CREW)
+            crewNode.upkeep *= 0f
+            val marineNode = report.getNode(fleetNode, MonthlyReport.MARINES)
+            marineNode.upkeep *= 0f
+
+            val officersNode = report.getNode(fleetNode, MonthlyReport.OFFICERS)
+            val adminNode = report.getNode(fleetNode, MonthlyReport.ADMIN)
+
+            for (od in playerFleet.fleetData.officersCopy) {
+                val oNode = report.getNode(officersNode, od.person.id)
+                if (oNode != null) oNode.upkeep *= 0f
+            }
+
+            for (admin in Global.getSector().characterData.admins){
+                val aNode = report.getNode(adminNode, admin.person.id)
+                if (aNode != null) aNode.upkeep *= 0f
+            }
+        }
+
+        override fun reportEconomyMonthEnd() {
+            return
+        }
     }
 
     override fun reportBattleOccurred(

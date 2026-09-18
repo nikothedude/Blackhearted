@@ -11,6 +11,7 @@ import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.entities.MoteSwarmEntityPlugin
 import nikoblackhearted.themes.motes.BHMoteCircleScript
 import nikoblackhearted.themes.motes.BHMoteThemeIntel
+import nikoblackhearted.themes.motes.BHMoteThemeIntel.BHMoteCrewWageListenter
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
@@ -32,7 +33,9 @@ class BHGenericCommand: BaseCommand {
 
         //val entity = Global.getSector().economy.getMarket("jangala").primaryEntity
 
-        BHMoteThemeIntel.get()?.adjustSongStacks(1)
+        Global.getSector().listenerManager.addListener(
+            BHMoteCrewWageListenter()
+        )
 
         return BaseCommand.CommandResult.SUCCESS
     }

@@ -120,7 +120,8 @@ BHMoteOfficerRebellionEndDance,DialogOptionSelected,"$option == BHMoteOfficerReb
 BHMoteOfficerRebellionEndThree,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndThree",,"You spread your joy to the crew, hugging, kissing, dancing... some do not reciprocate, limp as they are. You pay no mind. They sing, now.
 
 Slowly... slowly... it comes to a close. The dancing stops... they fall, and they stop screaming... and then-","BHMoteOfficerRebellionEndFour:Continue",
-BHMoteOfficerRebellionEndFour,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndFour","BHMusicToggle ""BH_music_scavenge_ambience"" true","...
+BHMoteOfficerRebellionEndFour,DialogOptionSelected,"$option == BHMoteOfficerRebellionEndFour","BHMusicToggle ""BH_music_scavenge_ambience"" true
+AddTextSmall ""Crew, Marines, Officers and Administrators no longer require pesky wages"" good","...
 
 They're all back to work. The dead are hauled off.
 
