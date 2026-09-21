@@ -7,7 +7,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import nikoblackhearted.BHSettings
 
-class BHMoteGenericFactor(points: Int, val tooltipName: String, val desc: String, val flavor: String) : BaseOneTimeFactor((points * BHSettings.BASE_POINT_MULT).toInt()) {
+class BHMoteGenericFactor(points: Int, val tooltipName: String, val desc: String, val flavor: String) : BaseOneTimeFactor(((points * BHSettings.BASE_POINT_MULT) * BHSettings.pointGenMult).toInt()) {
     override fun getDesc(intel: BaseEventIntel?): String {
         return tooltipName
     }

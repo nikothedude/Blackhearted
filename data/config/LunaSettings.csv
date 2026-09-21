@@ -1,0 +1,2 @@
+fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
+BH_pointGenMult,Dread increase mult,Double,1.0,,Changes how much dread you accrue for dreadful actions.,0,5,General

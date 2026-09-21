@@ -18,7 +18,9 @@ class BHModPlugin : BaseModPlugin() {
 
     class BHSettingsChangedListener: LunaSettingsListener {
         override fun settingsChanged(modID: String) {
-            BHSettings.loadSettings()
+            if (modID == BHSettings.MOD_ID) {
+                BHSettings.loadSettings()
+            }
         }
     }
 
