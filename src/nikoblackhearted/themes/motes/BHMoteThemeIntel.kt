@@ -7,7 +7,6 @@ import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.MonthlyReport
 import com.fs.starfarer.api.campaign.listeners.EconomyTickListener
-import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
@@ -32,7 +31,7 @@ import nikoblackhearted.FleetHelpers.isOutcast
 import nikoblackhearted.locks.LevelLock
 import nikoblackhearted.locks.MemoryLock
 import nikoblackhearted.themes.BHThemeMainIntel
-import nikoblackhearted.themes.crusades.BHMoteCrusadeManager
+import nikoblackhearted.themes.motes.crusades.BHMoteCrusadeManager
 import nikoblackhearted.themes.motes.combat.BHMoteOnDeathPlugin
 import nikoblackhearted.themes.motes.combat.BHMoteRingPlugin
 import nikoblackhearted.themes.motes.factors.BHMoteAgentHint
@@ -527,7 +526,6 @@ class BHMoteThemeIntel: BHThemeMainIntel() {
         },
         // endgame, past here
         ROAMING_MOTES("A Lovely Parade") {
-            // once per fight, if your ship dies, siphon hull from nearby ships (your own included) to repair yourself
             override fun createTooltip(): TooltipMakerAPI.TooltipCreator {
                 return object : BaseStageTooltip() {
                     override fun createTooltip(

@@ -1,2 +1,3 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
+BH_alliedHostiliesOk,Become hostile with allied factions,Boolean,true,,"If false, commissioned factions and factions in a nexerelin alliance with you will not be affected by rep maluses.",,,General
 BH_pointGenMult,Dread increase mult,Double,1.0,,Changes how much dread you accrue for dreadful actions.,0,5,General

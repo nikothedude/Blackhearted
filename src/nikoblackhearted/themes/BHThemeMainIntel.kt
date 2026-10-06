@@ -2,21 +2,23 @@ package nikoblackhearted.themes
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
-import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.listeners.ColonyPlayerHostileActListener
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener
 import com.fs.starfarer.api.combat.CombatEngineAPI
+import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.Nex_MarketCMD
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
+import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
+import com.fs.starfarer.api.util.Misc
 import exerelin.campaign.InvasionRound
 import exerelin.campaign.intel.agents.CovertActionIntel
 import exerelin.utilities.AgentActionListener
 import exerelin.utilities.InvasionListener
+import lunalib.backend.ui.components.LunaUITextFieldWithSlider
 import nikoblackhearted.BHHandler
 import nikoblackhearted.BHSettings
-import nikoblackhearted.themes.motes.BHMoteThemeIntel
-import java.awt.Color
 
 abstract class BHThemeMainIntel: BHThemeIntel(), FleetEventListener, ColonyPlayerHostileActListener {
     // of note, all of the main intels should have some sort of progressing dread mechanic.

@@ -1,4 +1,4 @@
-package nikoblackhearted.themes.crusades
+package nikoblackhearted.themes.motes.crusades
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BattleAPI

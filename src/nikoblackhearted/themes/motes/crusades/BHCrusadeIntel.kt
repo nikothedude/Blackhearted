@@ -1,4 +1,4 @@
-package nikoblackhearted.themes.crusades
+package nikoblackhearted.themes.motes.crusades
 
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
